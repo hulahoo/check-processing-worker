@@ -8,7 +8,8 @@
 
 - Скопируйте данный репозиторий
 - Переименуйте """example.env""" в """.env.dev""" и измените в нем данные.
-- Запустите проект командой """docker compose up -d --build""" (уберите ключ -d если не хотите запускать проект в фоновом режиме)
+- Запустите проект командой """docker compose up -d --build""" (уберите ключ -d если не хотите запускать проект в
+  фоновом режиме)
 
 Проведите миграции базы данных выполнив два последовательных запроса:
 
@@ -36,7 +37,23 @@
 
 - """python3 threatintel/manage.py runserver"""
 
-
 # Запуск воркера
-dagit -f worker/WorkerActualization.py
+
+dagit -f worker/multi_consumer_sources.py 
+
+появится веб интерфейс и по нему нужно будет перейти и запустить
+
+* (тестовые данные)
+
+```json
+{
+  "name": "wqwedq",
+  "provider_name": "provied",
+  "path": "https://raw.githubusercontent.com/",
+  "format": "STIX"
+}
+```
+
+dagit -f worker/worker_actualization.py 
+
 появится веб интерфейс и по нему нужно будет перейти и запустить

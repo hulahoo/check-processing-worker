@@ -392,3 +392,8 @@ class Activity(BaseModel):
     activity_type = models.ForeignKey('ActivityType', on_delete=models.DO_NOTHING)
     comment = models.TextField()
     user = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, default=None)
+
+
+class Task(BaseModel):
+    source = models.ForeignKey('Source', on_delete=models.CASCADE)
+    is_scheduled = models.BooleanField(default=False)

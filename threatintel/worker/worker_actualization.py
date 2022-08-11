@@ -3,6 +3,7 @@ import random
 import requests
 from dagster import op, schedule, job, repository, Field, DynamicOutput, DynamicOut
 
+from intelhandler.models import Task
 from worker.utils import django_init
 
 PATTERN = "%Y-%m-%d"
@@ -30,7 +31,7 @@ def actualization():
     Indicator.objects.filter(ttl__date=timezone.datetime.today()).delete()
 
 
-def download(path: str, limit) -> list:
+def download(path: str, limit) -> str:
     text = requests.get(path).text
     return text
 
@@ -86,6 +87,17 @@ def op_source_downloads_worker(context, data):
 @op
 def end_worker(context, data):
     return len(data)
+
+# @op
+# def time_wrapper(context):
+#     from intelhandler.models import Source
+#     sources = Source.objects.filter()
+#     for source in sources:
+#         source.update_time_period
+#         Task
+
+
+
 
 
 @job
