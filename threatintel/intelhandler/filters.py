@@ -1,3 +1,5 @@
+import django_filters
+from django.db import models
 from django_filters import rest_framework as filters
 
 from intelhandler.models import Indicator, Feed

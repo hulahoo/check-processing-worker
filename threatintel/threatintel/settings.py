@@ -146,3 +146,5 @@ KAFKA_GROUP_ID = env("KAFKA_GROUP_ID", "")
 KAFKA_TOPIC = env("KAFKA_TOPIC", "")
 KAFKA_IP = env("KAFKA_IP", "")
 AUTH_USER_MODEL = 'intelhandler.User'
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

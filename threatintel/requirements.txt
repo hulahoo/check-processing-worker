@@ -12,3 +12,4 @@ dagster
 kafka-python
 dagit
 django-filter
+aiohttp

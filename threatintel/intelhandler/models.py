@@ -255,12 +255,21 @@ class Indicator(BaseModel):
     # время жизни
     ttl = models.DateTimeField("Дата удаления", blank=True, null=True, default=None)
 
+    enrichment_context = models.JSONField(default=None, null=True)
+    push_to_detections = models.BooleanField(default=False)
+
+
     def __str__(self):
         return f"{self.value}"
 
     @classmethod
     def get_model_fields(cls):
-        return {i.attname: list(i.class_lookups.keys()) for i in cls._meta.fields}
+        exclude = ('enrichment_context',)
+        fields = {}
+        for i in cls._meta.fields:
+            if i.attname not in exclude:
+                fields[i.attname] = list(i.class_lookups.keys())
+        return fields
 
     class Meta:
         verbose_name = "Индикатор"
@@ -397,3 +406,10 @@ class Activity(BaseModel):
 class Task(BaseModel):
     source = models.ForeignKey('Source', on_delete=models.CASCADE)
     is_scheduled = models.BooleanField(default=False)
+
+
+class Enrichment(BaseModel):
+    type = models.CharField(
+        "Тип индикатора", max_length=4, choices=TYPE_OF_INDICATOR_CHOICES, default=IP
+    )
+    link = models.TextField()  # www.google.com/?ip={}
