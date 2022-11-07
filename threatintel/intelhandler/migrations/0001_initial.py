@@ -4,7 +4,7 @@ from django.conf import settings
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import intelhandler.models
+from threatintel.intelhandler import models as intel_models
 
 
 class Migration(migrations.Migration):
@@ -23,8 +23,8 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
                 ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('username', models.CharField(max_length=255, unique=True)),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
@@ -38,8 +38,8 @@ class Migration(migrations.Migration):
             name='ActivityType',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('name', models.CharField(max_length=255)),
             ],
             options={
@@ -51,8 +51,8 @@ class Migration(migrations.Migration):
             name='ParsingRule',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
             ],
             options={
                 'verbose_name': 'Правило парсинга',
@@ -63,8 +63,8 @@ class Migration(migrations.Migration):
             name='Source',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('name', models.CharField(max_length=255, unique=True)),
                 ('is_instead_full', models.BooleanField(default=False)),
                 ('is_active', models.BooleanField(default=True)),
@@ -89,8 +89,8 @@ class Migration(migrations.Migration):
             name='Tag',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('name', models.CharField(max_length=30, verbose_name='Название тега')),
                 ('colour', models.CharField(blank=True, max_length=30, null=True, verbose_name='Название тега')),
                 ('exportable', models.BooleanField(blank=True, null=True)),
@@ -104,8 +104,8 @@ class Migration(migrations.Migration):
             name='Indicator',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('type', models.CharField(choices=[('FEMA', "Email's origin"), ('SEMA', "Email's subject"), ('MD5H', 'File hashe MD5'), ('SHA1', 'File hashe SHA1'), ('SHA2', 'File hashe SHA256'), ('FILE', 'File name'), ('REGS', 'Registry'), ('IPAD', 'IP adresses'), ('URLS', "Full URL's"), ('DOMN', "Domain's")], default='IPAD', max_length=4, verbose_name='Тип индикатора')),
                 ('uuid', models.CharField(max_length=255, unique=True, verbose_name='Уникальный идентификатор индикатора')),
                 ('category', models.CharField(blank=True, max_length=128, null=True, verbose_name='Категория индикатора')),
@@ -197,8 +197,8 @@ class Migration(migrations.Migration):
             name='Feed',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('type_of_feed', models.CharField(choices=[('FEMA', "Email's origin"), ('SEMA', "Email's subject"), ('MD5H', 'File hashe MD5'), ('SHA1', 'File hashe SHA1'), ('SHA2', 'File hashe SHA256'), ('FILE', 'File name'), ('REGS', 'Registry'), ('IPAD', 'IP adresses'), ('URLS', "Full URL's"), ('DOMN', "Domain's")], default='IPAD', max_length=4, verbose_name='Тип фида')),
                 ('format_of_feed', models.CharField(choices=[('CSV', 'CSV формат'), ('JSN', 'JSON формат'), ('XML', 'XML формат'), ('TXT', 'TXT формат')], default='TXT', max_length=15, verbose_name='Формат фида')),
                 ('auth_type', models.CharField(choices=[('NAU', 'Отсуствует'), ('API', 'API token'), ('BSC', 'HTTP basic')], default='NAU', max_length=3, verbose_name='Тип авторизации')),
@@ -229,8 +229,8 @@ class Migration(migrations.Migration):
             name='Activity',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('comment', models.TextField()),
                 ('activity_type', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='intelhandler.activitytype')),
                 ('indicator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='intelhandler.indicator')),

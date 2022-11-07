@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Feed
+from threatintel.intelhandler.models import Feed
 
 
 class FeedForm(forms.ModelForm):

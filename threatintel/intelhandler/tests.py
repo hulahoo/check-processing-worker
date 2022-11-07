@@ -2,8 +2,8 @@ import random
 
 from django.test import TestCase
 
-from intelhandler.models import Feed
-from intelhandler.script import parse_stix, parse_csv, parse_misp, parse_free_text, parse_custom_json
+from threatintel.intelhandler.models import Feed
+from threatintel.intelhandler.script import parse_stix, parse_csv, parse_misp, parse_free_text, parse_custom_json
 
 
 def randoms():
@@ -28,7 +28,8 @@ class ServicesTestCase(TestCase):
         return obj, feed['raw_indicators']
 
     def test_stix(self):
-        link = 'https://raw.githubusercontent.com/davidonzo/Threat-Intel/4cbb51faf707a11da4258ed402f585ac5c330f3b/stix2/34d0015a5622c3a14174e7a8bb5cc51d.json'
+        link = 'https://raw.githubusercontent.com/davidonzo/Threat-Intel \
+                /4cbb51faf707a11da4258ed402f585ac5c330f3b/stix2/34d0015a5622c3a14174e7a8bb5cc51d.json'
 
         params = ServicesTestCase.create_feed(self.feed_template, link)
         result = parse_stix(*params)
@@ -63,7 +64,8 @@ class ServicesTestCase(TestCase):
         self.assertEqual(type(result).__name__, 'list')
 
     def test_custom_json(self):
-        link = "https://raw.githubusercontent.com/Lookingglass/opentpx/master/examples/tpx/valid/tpx2-2-example-collections-nc.json"
+        link = "https://raw.githubusercontent.com/Lookingglass/opentpx/master/examples/ \
+                tpx/valid/tpx2-2-example-collections-nc.json"
 
         params = ServicesTestCase.create_feed(self.feed_template, link)
         result = parse_custom_json(*params)

@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import intelhandler.models
+from threatintel.intelhandler import models as intel_models
 
 
 class Migration(migrations.Migration):
@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             name='Role',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('name', models.CharField(max_length=255)),
                 ('level', models.IntegerField()),
             ],

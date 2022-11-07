@@ -1,15 +1,13 @@
-import asyncio
 import os
+import aiohttp
+import asyncio
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from django.core.management import BaseCommand
 
-# cron_enrichment
-from intelhandler.models import Enrichment, Indicator
-import aiohttp
-
-from worker.services import chunks
+from threatintel.worker.services import chunks
+from threatintel.intelhandler.models import Enrichment, Indicator
 
 
 class Command(BaseCommand):
@@ -24,7 +22,7 @@ class Command(BaseCommand):
         for enrichment in enrichments:
             scheduler.add_job(worker,
                               args=(enrichment,),
-                              trigger=CronTrigger(hour=f"*/1"),
+                              trigger=CronTrigger(hour="*/1"),
                               replace_existing=False,
                               max_instances=1)
             tasks.append(worker(enrichment))

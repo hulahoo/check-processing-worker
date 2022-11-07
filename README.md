@@ -7,14 +7,10 @@
 ### Для запуска проекта с помощью Docker Compose:
 
 - Скопируйте данный репозиторий
-- Переименуйте """example.env""" в """.env.dev""" и измените в нем данные.
+- Переименуйте """example.env""" в """.env""" и измените в нем данные.
 - Запустите проект командой """docker compose up -d --build""" (уберите ключ -d если не хотите запускать проект в
   фоновом режиме)
-
-Проведите миграции базы данных выполнив два последовательных запроса:
-
-- """docker compose exec web python3 manage.py makemigrations"""
-- """docker compose exec web python3 manage.py migrate"""
+- Миграции базы данных выполняються автоматически
 
 После всех выполненных шагов, создайте учетную запись администратора
 """docker compose exec web python3 manage.py createsuperuser"""

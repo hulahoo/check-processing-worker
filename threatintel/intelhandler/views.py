@@ -1,29 +1,26 @@
-import django_filters
-from django.shortcuts import render
+
 from django.http import HttpResponse
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, viewsets
 from django_filters import rest_framework as filters
+from django.shortcuts import render
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from worker.services import choose_type
-from .filters import IndicatorFilter, FeedFilter
-from .forms import FeedForm
-from confluent_kafka import Consumer, Producer
-from confluent_kafka.admin import AdminClient, NewTopic
-
-# Create your views here.
-from .models import Feed, Indicator, Source
-from .serializers import IndicatorSerializer, FeedSerializer, IndicatorWithFeedsSerializer, SourceSerializer
+from threatintel.worker.services import choose_type
+from threatintel.intelhandler.forms import FeedForm
+from threatintel.intelhandler.filters import IndicatorFilter, FeedFilter
+from threatintel.intelhandler.models import Feed, Indicator, Source
+from threatintel.intelhandler.serializers import (
+    IndicatorSerializer, FeedSerializer, IndicatorWithFeedsSerializer, SourceSerializer
+)
 
 
 def feed_add(request):
     if request.method == "POST":
         form = FeedForm(request.POST)
         if form.is_valid():
-            feed = form.save()
+            form.save()
             return HttpResponse("Succesfully added!")
     else:
         form = FeedForm()

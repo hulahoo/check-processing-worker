@@ -1,7 +1,7 @@
-from confluent_kafka import Consumer, Producer
+from kafka import KafkaConsumer
 
 
-c = Consumer(
+c = KafkaConsumer(
     {
         "bootstrap.servers": "broker",
         "group.id": "mygroup",

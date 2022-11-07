@@ -1,12 +1,9 @@
 import json
 from typing import List
 
-from kafka import KafkaProducer
-
-from worker.utils import django_init
-
-django_init()
 from django.conf import settings
+
+from kafka import KafkaProducer
 
 
 def json_serializer(data):
@@ -34,18 +31,3 @@ class MultiProducer:
     @classmethod
     def flush(cls, timeout=60 * 5):
         cls.producer.flush(timeout=timeout)
-
-
-# if __name__ == '__main__':
-    # def stix():
-    # req = {"feed": {
-    #     "url": 'https://raw.githubusercontent.com/davidonzo/Threat-Intel/master/stix2/01e05d0c2d5ee8b49a6a06ff623af7e1.json',
-    #
-    # },
-    #     "type": "stix",
-    #     "raw_indicators": []
-    # }
-    #
-    # print(settings.KAFKA_TOPIC, settings.KAFKA_IP)
-    # MultiProducer.send_data({"WQE": 'QWW'})
-    # MultiProducer.flush()

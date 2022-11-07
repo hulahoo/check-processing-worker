@@ -1,6 +1,6 @@
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.triggers.cron import CronTrigger
 from django.conf import settings
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.schedulers.blocking import BlockingScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events
 
 from intelhandler.models import Source

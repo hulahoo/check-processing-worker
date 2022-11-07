@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 
-from . import views
+from threatintel.intelhandler import views
 
 router = routers.SimpleRouter()
 router.register(r'indicators', views.IndicatorListView)

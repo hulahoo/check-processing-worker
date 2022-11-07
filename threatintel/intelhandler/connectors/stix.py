@@ -1,9 +1,6 @@
-from intelhandler.models import Feed, Indicator
-from stix2elevator import elevate
-from stix2elevator.options import initialize_options
-from pprint import pprint
-import uuid
 import json
+
+from threatintel.intelhandler.models import Indicator
 
 bundle = """
 {
@@ -18,7 +15,8 @@ bundle = """
       "created": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
       "name": "Poison Ivy",
-      "description": "Poison Ivy is a remote access tool, first released in 2005 but unchanged since 2008. It includes features common to most Windows-based RATs, including key logging, screen capturing, video capturing, file transfers, system administration, password theft, and traffic relaying.",
+      "description": "Poison Ivy is a remote access tool, first released in 2005 but unchanged since 2008. \
+      It includes features common to most Windows-based RATs, including key logging, screen capturing, video capturing, file transfers, system administration, password theft, and traffic relaying.",
       "malware_types": [
         "remote-access-trojan"
       ]

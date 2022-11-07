@@ -1,13 +1,10 @@
-import audioop
-
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import DateTimeField
+from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
 
-from intelhandler.constants import *
-from django.contrib.auth.models import PermissionsMixin, UserManager as DjangoUserManager
+from threatintel.intelhandler import constants
 
 
 class CreationDateTimeField(DateTimeField):
@@ -113,7 +110,7 @@ class Indicator(BaseModel):
     """
 
     type = models.CharField(
-        "Тип индикатора", max_length=4, choices=TYPE_OF_INDICATOR_CHOICES, default=IP
+        "Тип индикатора", max_length=4, choices=constants.TYPE_OF_INDICATOR_CHOICES, default=constants.IP
     )
     uuid = models.CharField(
         "Уникальный идентификатор индикатора", unique=True, max_length=255
@@ -189,7 +186,7 @@ class Indicator(BaseModel):
     ioc_context_geo = models.CharField(max_length=64, blank=True, null=True)
     ioc_context_id = models.CharField(max_length=64, blank=True, null=True)
     ioc_context_industry = models.CharField(max_length=64, blank=True, null=True)
-    ioc_context_ip = models.CharField(max_length=64, blank=True, null=True)
+    # ioc_context_ip = models.CharField(max_length=64, blank=True, null=True)
     ioc_context_ip_geo = models.CharField(max_length=64, blank=True, null=True)
     ioc_context_ip_whois_asn = models.CharField(max_length=64, blank=True, null=True)
     ioc_context_ip_whois_contact_abuse_country = models.CharField(
@@ -258,7 +255,6 @@ class Indicator(BaseModel):
     enrichment_context = models.JSONField(default=None, null=True)
     push_to_detections = models.BooleanField(default=False)
 
-
     def __str__(self):
         return f"{self.value}"
 
@@ -292,19 +288,19 @@ class Feed(BaseModel):
     """
 
     type_of_feed = models.CharField(
-        "Тип фида", max_length=4, choices=TYPE_OF_FEED_CHOICES, default=IP
+        "Тип фида", max_length=4, choices=constants.TYPE_OF_FEED_CHOICES, default=constants.IP
     )
     format_of_feed = models.CharField(
-        "Формат фида", max_length=15, choices=FORMAT_OF_FEED_CHOICES, default=TXT_FILE
+        "Формат фида", max_length=15, choices=constants.FORMAT_OF_FEED_CHOICES, default=constants.TXT_FILE
     )
     auth_type = models.CharField(
-        "Тип авторизации", max_length=3, choices=TYPE_OF_AUTH_CHOICES, default=NO_AUTH
+        "Тип авторизации", max_length=3, choices=constants.TYPE_OF_AUTH_CHOICES, default=constants.NO_AUTH
     )
     polling_frequency = models.CharField(
         "Частота обновления фида",
         max_length=3,
-        choices=POLLING_FREQUENCY_CHOICES,
-        default=NEVER,
+        choices=constants.POLLING_FREQUENCY_CHOICES,
+        default=constants.NEVER,
     )
 
     auth_login = models.CharField(
@@ -340,7 +336,7 @@ class Feed(BaseModel):
         Indicator, related_name="feeds", verbose_name="Индикатор", blank=True
     )
 
-    update_status = models.CharField(max_length=15, choices=TYPE_OF_STATUS_UPDATE, default=ENABLED)
+    update_status = models.CharField(max_length=15, choices=constants.TYPE_OF_STATUS_UPDATE, default=constants.ENABLED)
 
     ts = models.DateTimeField(auto_now_add=True)
 
@@ -370,11 +366,11 @@ class Source(BaseModel):
         default=0
     )
     format = models.CharField(
-        "Формат", max_length=15, choices=TYPE_OF_FORMAT, default=CSV
+        "Формат", max_length=15, choices=constants.TYPE_OF_FORMAT, default=constants.CSV
     )
 
     auth_type = models.CharField(
-        "Тип авторизации", max_length=3, choices=TYPE_OF_AUTH_CHOICES, default=NO_AUTH
+        "Тип авторизации", max_length=3, choices=constants.TYPE_OF_AUTH_CHOICES, default=constants.NO_AUTH
     )
     auth_login = models.CharField(
         "Логин для авторизации", max_length=32, blank=True, null=True
@@ -410,6 +406,6 @@ class Task(BaseModel):
 
 class Enrichment(BaseModel):
     type = models.CharField(
-        "Тип индикатора", max_length=4, choices=TYPE_OF_INDICATOR_CHOICES, default=IP
+        "Тип индикатора", max_length=4, choices=constants.TYPE_OF_INDICATOR_CHOICES, default=constants.IP
     )
     link = models.TextField()  # www.google.com/?ip={}

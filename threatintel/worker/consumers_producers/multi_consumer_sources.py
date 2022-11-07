@@ -30,11 +30,8 @@ def event_worker(data: dict):
     Task.objects.get_or_create(source_id=source.pk)
 
 
-
 @op
 def op_consumer(context, partition: int):
-    from worker.utils import django_init
-    django_init()
     from django.conf import settings
     logger = get_dagster_logger()
     group_id = settings.KAFKA_GROUP_ID

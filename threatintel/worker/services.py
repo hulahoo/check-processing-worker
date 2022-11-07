@@ -1,4 +1,4 @@
-from intelhandler.script import parse_custom_json, parse_stix, parse_free_text, parse_misp, parse_csv
+from threatintel.intelhandler.script import parse_custom_json, parse_stix, parse_free_text, parse_misp, parse_csv
 
 methods = {
     "json": parse_custom_json,

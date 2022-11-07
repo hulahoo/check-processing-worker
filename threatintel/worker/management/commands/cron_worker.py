@@ -1,7 +1,7 @@
 # cron_worker
-import logging
-import random
 import time
+import random
+import logging
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -10,8 +10,8 @@ from django_apscheduler import util
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 
-from intelhandler.models import Task, Source, Feed
-from worker.services import choose_type
+from threatintel.worker.services import choose_type
+from threatintel.intelhandler.models import Task, Source, Feed
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,6 @@ class Command(BaseCommand):
 
         scheduler.add_jobstore(DjangoJobStore(), "default")
         clear_jobs()
-        return
 
         tasks = Task.objects.all()
         for task in tasks:

@@ -4,12 +4,13 @@ from uuid import uuid4
 
 from bs4 import BeautifulSoup
 from flatdict import FlatterDict
+from loguru import logger
 from stix2elevator.options import initialize_options
 
-from intelhandler.models import (
-    Indicator,
+from threatintel.intelhandler.models import Indicator
+from threatintel.intelhandler.services import (
+    parse_misp_event, get_url, get_or_elevate, convert_txt_to_indicator, feed_control
 )
-from intelhandler.services import parse_misp_event, get_url, get_or_elevate, convert_txt_to_indicator, feed_control
 
 initialize_options(options={"spec_version": "2.1"})
 
@@ -93,8 +94,8 @@ def parse_free_text(feed, raw_indicators=None, config: dict = {}):
     raw_indicators = raw_indicators.split("\n")
     try:
         raw_indicators.remove("")
-    except:
-        pass
+    except Exception as e:
+        logger.exception(f"Error occured: Error is: {e}")
     raw_indicators = [
         ioc.replace("\r", "") for ioc in raw_indicators if not ioc.startswith("#")
     ]

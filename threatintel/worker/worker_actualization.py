@@ -1,27 +1,9 @@
 import random
 
 import requests
-from dagster import op, schedule, job, repository, Field, DynamicOutput, DynamicOut
-
-from intelhandler.models import Task
-from worker.utils import django_init
+from dagster import op, schedule, job, repository, DynamicOutput, DynamicOut
 
 PATTERN = "%Y-%m-%d"
-
-
-@op(config_schema={'data_lst': Field(list, default_value=[])})
-def op_time_worker(context):
-    django_init()
-    # actualization()
-    # from worker.MultiProducer import MultiProducer
-    #
-    # data_lst = context.op_config['data_lst']
-    # if data_lst is None:
-    #     data_lst = []
-    # print(data_lst)
-    # logger = get_dagster_logger()
-    # logger.info(str(data_lst))
-    # MultiProducer.send_list_of_data(data_lst)
 
 
 def actualization():
@@ -31,14 +13,13 @@ def actualization():
     Indicator.objects.filter(ttl__date=timezone.datetime.today()).delete()
 
 
-def download(path: str, limit) -> str:
+def download(path: str) -> str:
     text = requests.get(path).text
     return text
 
 
 @op(out=DynamicOut())
 def get_sources():
-    django_init()
 
     from intelhandler.models import Source
 
@@ -47,12 +28,8 @@ def get_sources():
 
 
 @op
-def op_source_downloads_worker(context, data):
+def op_source_downloads_worker(data):
     print(data)
-
-    django_init()
-
-    print('django init')
 
     from intelhandler.models import Source
     from intelhandler.models import Feed
@@ -85,7 +62,7 @@ def op_source_downloads_worker(context, data):
 
 
 @op
-def end_worker(context, data):
+def end_worker(data):
     return len(data)
 
 # @op
@@ -95,9 +72,6 @@ def end_worker(context, data):
 #     for source in sources:
 #         source.update_time_period
 #         Task
-
-
-
 
 
 @job

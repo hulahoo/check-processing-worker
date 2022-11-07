@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import intelhandler.models
+
 
 
 class Migration(migrations.Migration):

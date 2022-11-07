@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Indicator, Feed, Source
+from threatintel.intelhandler.models import Indicator, Feed, Source
 
 
 class IndicatorSerializer(serializers.ModelSerializer):

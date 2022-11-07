@@ -3,7 +3,7 @@
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import intelhandler.models
+from threatintel.intelhandler import models as intel_models
 
 
 class Migration(migrations.Migration):
@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
             name='Enrichment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('type', models.CharField(choices=[('FEMA', "Email's origin"), ('SEMA', "Email's subject"), ('MD5H', 'File hashe MD5'), ('SHA1', 'File hashe SHA1'), ('SHA2', 'File hashe SHA256'), ('FILE', 'File name'), ('REGS', 'Registry'), ('IPAD', 'IP adresses'), ('URLS', "Full URL's"), ('DOMN', "Domain's")], default='IPAD', max_length=4, verbose_name='Тип индикатора')),
                 ('link', models.TextField()),
             ],
@@ -47,8 +47,8 @@ class Migration(migrations.Migration):
             name='Task',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', intelhandler.models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
-                ('modified', intelhandler.models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
+                ('created', intel_models.CreationDateTimeField(auto_now_add=True, verbose_name='создано')),
+                ('modified', intel_models.ModificationDateTimeField(auto_now=True, verbose_name='изменено')),
                 ('is_scheduled', models.BooleanField(default=False)),
                 ('source', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='intelhandler.source')),
             ],
