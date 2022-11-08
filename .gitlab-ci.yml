@@ -14,8 +14,6 @@ sonarqube-check:
     image:
         name: sonarsource/sonar-scanner-cli:latest
         entrypoint: [""]
-    tags:
-        - docker
     variables:
         SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
         GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
@@ -30,8 +28,6 @@ sonarqube-check:
 flake:
   stage: linter
   image: python:3.9-alpine3.14
-  tags:
-     - docker
   before_script:
      - pip install -q flake8
   script:
@@ -40,8 +36,6 @@ flake:
 docker-image-prod:
     stage: build
     image: docker:18.06
-    tags:
-        - docker
     only:
         - main
     before_script:
