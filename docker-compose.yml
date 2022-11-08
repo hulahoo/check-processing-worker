@@ -19,7 +19,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+        - .:/usr/src/app/
     depends_on:
         - db
     environment:
@@ -28,21 +28,25 @@ services:
   enrichment:
     build: .
     volumes:
-      - ./threatintel/:/usr/src/app/
+      - .:/usr/src/app/
     env_file:
       - .env
     depends_on:
       - db
+    ports:
+      - "8000:8000"
     environment:
       - CONTAINER_TYPE=ENRICHMENT_CONTAINER
 
   worker:
       build: .
       volumes:
-          - ./threatintel/:/usr/src/app/
+          - .:/usr/src/app/
       env_file:
           - .env
       depends_on:
           - db
       environment:
           - CONTAINER_TYPE=WORKER_CONTAINER
+      ports:
+          - "9000:9000"

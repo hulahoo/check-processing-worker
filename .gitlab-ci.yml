@@ -31,7 +31,7 @@ flake:
   stage: linter
   image: python:3.9-alpine3.14
   tags:
-     - docke
+     - docker
   before_script:
      - pip install -q flake8
   script:

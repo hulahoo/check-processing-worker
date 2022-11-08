@@ -42,8 +42,8 @@ ENV PYTHONUNBUFFERED=1 \
     APPLICATION_PATH=/usr/src/app/ \
     DAGSTER_HOME=/opt/dagster/dagster_home/ \
     DJANGO_CONFIGURATION=BaseConfiguration \
-    DJANGO_SETTINGS_MODULE=threatintel.settings
-    
+    DJANGO_SETTINGS_MODULE=threatintel.threatintel.settings
+
 ENV PYTHONPATH /app:$PYTHONPATH
 
 RUN mkdir -p $DAGSTER_HOME
@@ -62,10 +62,8 @@ COPY entrypoint.sh /entrypoint.sh
 COPY ./dagster.yaml ${DAGSTER_HOME}
 
 ARG PORT
-ENV PORT ${PORT:-3000}
+ENV PORT ${PORT:-8000}
 
 RUN chmod +x /entrypoint.sh
-
-EXPOSE ${PORT}
 
 CMD ["/entrypoint.sh"]

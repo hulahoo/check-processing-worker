@@ -120,6 +120,9 @@ class BaseConfiguration(Configuration):
 
     STATIC_URL = "/static/"
 
+    STATICFILES_DIRS = (str(BASE_DIR.joinpath("static_files")),)
+    STATIC_ROOT = os.getenv("STATIC_ROOT", os.path.join(BASE_DIR, "static"))
+
     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
     MEDIA_URL = "/media/"
 
