@@ -1,0 +1,42 @@
+replicaCount: 1
+
+resources:
+  limits:
+    memory: 1Gi
+    cpu: 1
+  requests:
+    memory: 512Mi
+    cpu: 100m
+
+env:
+  # create me
+
+
+psvc:
+  name: Сервис скоринга
+  description: Сервис для актуалиизации скоринга и удаления архивных индикаторов 
+  istioSidecarSettings:
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    requests:
+      memory: 50Mi
+      cpu: 10m
+
+vaultSecretKeys:
+  - POSTGRES_PASSWORD
+  - POSTGRES_USER
+
+strategyType: Recreate
+
+databases:
+  - id: DATABASE_1
+    type: POSTGRESQL
+    host: 10.7.77.7
+    port: 5432
+    name: mydb
+
+kafkaClusters:
+  cluster-1:
+    topics:
+      syslog:
