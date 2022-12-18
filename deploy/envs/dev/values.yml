@@ -1,3 +1,7 @@
+psvc:
+  name: Воркер актуализации скоринга
+  description: Воркер актуализации скоринга, обогащения инфромацией и удаление архивных индикаторов
+
 replicaCount: 1
 
 resources:
@@ -8,27 +12,6 @@ resources:
     memory: 512Mi
     cpu: 100m
 
-env:
-  # create me
-
-
-psvc:
-  name: Сервис скоринга
-  description: Сервис для актуалиизации скоринга и удаления архивных индикаторов 
-  istioSidecarSettings:
-    limits:
-      memory: 200Mi
-      cpu: 200m
-    requests:
-      memory: 50Mi
-      cpu: 10m
-
-vaultSecretKeys:
-  - POSTGRES_PASSWORD
-  - POSTGRES_USER
-
-strategyType: Recreate
-
 databases:
   - id: DATABASE_1
     type: POSTGRESQL
@@ -36,7 +19,4 @@ databases:
     port: 5432
     name: mydb
 
-kafkaClusters:
-  cluster-1:
-    topics:
-      syslog:
+strategyType: Recreate

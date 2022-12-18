@@ -1,55 +1,7 @@
-# feeds-import-worker
+# data-processing-worker
 
-Сервис создан для импорта внешних ресурсов Threat Intelligence.
+Воркер актуализации скоринга, обогащения инфромацией и удаление архивных индикаторов
 
-## Test and Deploy
+### Для локального запуска, необходимо создать Dockerfile и docker-compose.yml(НЕ ПУШИТЬ ЭТИ ДВА ФАЙЛА В РЕПОЗИТОРИЙ)
 
-### Для запуска проекта с помощью Docker Compose:
-
-- Скопируйте данный репозиторий
-- Переименуйте """example.env""" в """.env""" и измените в нем данные.
-- Запустите проект командой """docker compose up -d --build""" (уберите ключ -d если не хотите запускать проект в
-  фоновом режиме)
-- Миграции базы данных выполняються автоматически
-
-После всех выполненных шагов, создайте учетную запись администратора
-"""docker compose exec web python3 manage.py createsuperuser"""
-Для взаимодействия с админ панелью перейдите по адресу: """localhost:8000/admin"""
-
-### Для локального запуска в dev среде
-
-- Скопируйте данный репозиторий
-
-Проведите миграции базы данных выполнив два последовательных запроса:
-
-- """python3 threatintel/manage.py makemigrations"""
-- """python3 threatintel/manage.py migrate"""
-
-Создайте учетную запись администратора
-
-- """python3 threatintel/manage.py createsuperuser"""
-
-Запустите локальный сервер (только для разработки, будет использована sqlite БД)
-
-- """python3 threatintel/manage.py runserver"""
-
-# Запуск воркера
-
-dagit -f worker/multi_consumer_sources.py 
-
-появится веб интерфейс и по нему нужно будет перейти и запустить
-
-* (тестовые данные)
-
-```json
-{
-  "name": "wqwedq",
-  "provider_name": "provied",
-  "path": "https://raw.githubusercontent.com/",
-  "format": "STIX"
-}
-```
-
-dagit -f worker/worker_actualization.py 
-
-появится веб интерфейс и по нему нужно будет перейти и запустить
+### Файл будет обновлен позднее
