@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from data_processing_worker.models.base import Base
+from data_proccessing_worker.models.base import Base
 
 
 class IDBase(Base):

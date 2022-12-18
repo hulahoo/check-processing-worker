@@ -12,10 +12,10 @@ install_requires = [
     ('python-dotenv', '0.21.0'),
 ]
 
-CI_PROJECT_NAME = os.environ.get("CI_PROJECT_NAME", "data-processing-worker")
+CI_PROJECT_NAME = os.environ.get("CI_PROJECT_NAME", "data-proccessing-worker")
 ARTIFACT_VERSION = os.environ.get("ARTIFACT_VERSION", "local")
 CI_PROJECT_TITLE = os.environ.get("CI_PROJECT_TITLE", "Воркер актуализации скоринга")
-CI_PROJECT_URL = os.environ.get("CI_PROJECT_URL", "https://gitlab.in.axept.com/rshb/data-processing-worker")
+CI_PROJECT_URL = os.environ.get("CI_PROJECT_URL", "https://gitlab.in.axept.com/rshb/data-proccessing-worker")
 
 
 setup(
@@ -29,7 +29,7 @@ setup(
     package_dir={"": "src"},
     entry_points={
         'console_scripts': [
-            CI_PROJECT_NAME + " = " + "data_processing_worker.main:execute",
+            CI_PROJECT_NAME + " = " + "data_proccessing_worker.main:execute",
         ]
     }
 )

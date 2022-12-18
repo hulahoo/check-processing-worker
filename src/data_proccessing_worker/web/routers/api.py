@@ -2,7 +2,7 @@ from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from data_processing_worker.config.log_conf import logger
+from data_proccessing_worker.config.log_conf import logger
 
 
 app = Flask(__name__)

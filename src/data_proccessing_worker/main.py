@@ -2,8 +2,8 @@
 
 import threading
 
-from data_processing_worker.web.routers.api import execute as flask_app
-from data_processing_worker.models.migrations import apply_migrations
+from data_proccessing_worker.web.routers.api import execute as flask_app
+from data_proccessing_worker.models.migrations import apply_migrations
 
 def execute():
     """

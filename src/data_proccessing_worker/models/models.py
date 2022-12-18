@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String
 
-from data_processing_worker.models.abstract import IDBase, TimestampBase
+from data_proccessing_worker.models.abstract import IDBase, TimestampBase
 
 
 class IndicatorsContextSources(IDBase, TimestampBase):
