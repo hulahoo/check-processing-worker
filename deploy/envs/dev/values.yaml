@@ -13,10 +13,10 @@ resources:
     cpu: 100m
 
 databases:
-  - id: DATABASE_1
-    type: POSTGRESQL
-    host: 10.7.77.7
+  - type: POSTGRESQL
+    host: 10.7.27.113
     port: 5432
-    name: mydb
+    name: db
+
 
 strategyType: Recreate
