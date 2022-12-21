@@ -73,7 +73,7 @@ def api_routes():
         }
 
 
-@app.route('/api/force_update', methods=["GET"])
+@app.route('/api/force-update', methods=["GET"])
 def force_update():
     indicator_service = IndicatorService()
     indicator_service.update_weights()
