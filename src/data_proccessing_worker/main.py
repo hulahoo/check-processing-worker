@@ -3,7 +3,8 @@
 import threading
 
 from data_proccessing_worker.web.routers.api import execute as flask_app
-from data_proccessing_worker.models.migrations import apply_migrations
+from data_proccessing_worker.apps.models.migrations import apply_migrations
+
 
 def execute():
     """
@@ -14,7 +15,6 @@ def execute():
     3. Apply migrations
     """
     apply_migrations()
-    
+
     flask_thread = threading.Thread(target=flask_app)
     flask_thread.start()
-    

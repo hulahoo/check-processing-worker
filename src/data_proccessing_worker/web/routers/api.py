@@ -3,6 +3,7 @@ from flask_wtf.csrf import CSRFProtect
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from data_proccessing_worker.config.log_conf import logger
+from data_proccessing_worker.apps.services import IndicatorService
 
 
 app = Flask(__name__)
@@ -70,3 +71,15 @@ def api_routes():
         },
         "paths": {}
         }
+
+
+@app.route('/api/force_update', methods=["GET"])
+def force_update():
+    indicator_service = IndicatorService()
+    indicator_service.update_weights()
+
+    return app.response_class(
+        response={"status": "OK"},
+        status=200,
+        mimetype=mimetype
+    )

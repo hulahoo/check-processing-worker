@@ -1,16 +1,34 @@
-from pydantic import BaseSettings
+from dataclasses import dataclass
+from environs import Env
 
 
-class Settings(BaseSettings):
-
-    APP_POSTGRESQL_HOST: str = "localhost"
-    APP_POSTGRESQL_PASSWORD: str = "password"
-    APP_POSTGRESQL_USER: str = "username"
-    APP_POSTGRESQL_NAME: str = "db"
-    APP_POSTGRESQL_PORT: int = 5432
-
-    class Config:
-        env_file = "./.env"
+@dataclass
+class DBConfig:
+    name: str
+    user: str
+    password: str
+    host: str
+    port: str
 
 
-settings = Settings()
+@dataclass
+class Config:
+    db: DBConfig
+
+
+def load_config(path: str = None) -> Config:
+    env = Env()
+    env.read_env(path)
+
+    return Config(
+        db=DBConfig(
+            name=env.str('APP_POSTGRESQL_NAME'),
+            user=env.str('APP_POSTGRESQL_USER'),
+            password=env.str('APP_POSTGRESQL_PASSWORD'),
+            host=env.str('APP_POSTGRESQL_HOST'),
+            port=env.str('APP_POSTGRESQL_PORT')
+        )
+    )
+
+
+settings = load_config('.env')
