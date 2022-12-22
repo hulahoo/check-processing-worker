@@ -42,10 +42,10 @@ class IndicatorService:
 
             score = ceil(feed_weight * tag_weight * RV * 100)
 
-            old_weight = indicator.ioc_weight
-            indicator.ioc_weight = score
+            old_weight = indicator.weight
+            indicator.weight = score
 
-            if indicator.ioc_weight == 0:
+            if indicator.weight == 0:
                 indicator.is_archived = True
 
             indicator.updated_at = now
