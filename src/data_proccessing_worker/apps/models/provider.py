@@ -1,3 +1,4 @@
+from data_proccessing_worker.config.log_conf import logger
 from data_proccessing_worker.apps.models.base import SyncPostgresDriver
 from data_proccessing_worker.apps.models.models import Feed, Indicator, Job, IndicatorActivity
 
@@ -28,6 +29,7 @@ class JobProvider(BaseProvider):
         self.session.commit()
 
     def update(self, job: Job):
+        logger.info(f"Updating job: {job}")
         self.session.add(job)
         self.session.commit()
 

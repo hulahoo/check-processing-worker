@@ -91,11 +91,13 @@ def force_update():
     )
 
     job_provider.add(job)
+    logger.info(f"Job created: {job.id}:{job.service_name}:{job.started_at}:{job.status}")
 
     indicator_service.update_weights()
 
     job.finished_at = datetime.now()
     job.status = JobStatus.SUCCESS
+    logger.info(f"Job with id: {job.id} is finished successfully. Start update job")
     job_provider.update(job)
 
     return app.response_class(
