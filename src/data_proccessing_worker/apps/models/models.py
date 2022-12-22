@@ -52,6 +52,18 @@ class IndicatorFeedRelationship(IDBase, TimestampBase):
     deleted_at = Column(DateTime)
 
 
+class Tag(IDBase, TimestampBase):
+    __tablename__ = "tags"
+
+    title = Column(String(128))
+    weight = Column(DECIMAL)
+    created_by = Column(BigInteger)
+    updated_at = Column(DateTime)
+    deleted_at = Column(DateTime)
+
+    UniqueConstraint(title, name='tags_unique_title')
+
+
 class Indicator(TimestampBase):
     __tablename__ = "indicators"
 
@@ -84,4 +96,37 @@ class Indicator(TimestampBase):
         )
     )
 
+    tags = relationship(
+        Tag,
+        backref='indicators',
+        secondary='indicator_tag_relationships',
+    )
+
     UniqueConstraint(value, ioc_type, name='indicators_unique_value_type')
+
+
+class IndicatorActivity(IDBase, TimestampBase):
+    __tablename__ = "indicator_activities"
+
+    type = Column(String(32))
+    details = Column(JSONB)
+    created_by = Column(BigInteger)
+
+    indicator_id = Column(UUID, ForeignKey('indicators.id'))
+
+
+class IndicatorTagRalationship(IDBase, TimestampBase):
+    __tablename__ = "indicator_tag_relationships"
+
+    indicator_id = Column(UUID, ForeignKey('indicators.id'))
+    tag_id = Column(BigInteger, ForeignKey('tags.id'))
+
+
+class Job(IDBase):
+    __tablename__ = "jobs"
+    service_name = Column(String(64))
+    title = Column(String(64))
+    result = Column(JSONB)
+    status = Column(String(16))
+    started_at = Column(DateTime)
+    finished_at = Column(DateTime)
