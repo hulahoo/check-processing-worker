@@ -15,7 +15,7 @@ install_requires = [
     ('dagit', '1.1.6'),
 ]
 
-CI_PROJECT_NAME = os.environ.get("CI_PROJECT_NAME", "data-proccessing-worker")
+CI_PROJECT_NAME = os.environ.get("CI_PROJECT_NAME", "data-processing-worker")
 ARTIFACT_VERSION = os.environ.get("ARTIFACT_VERSION", "local")
 CI_PROJECT_TITLE = os.environ.get("CI_PROJECT_TITLE", "Воркер актуализации скоринга")
 CI_PROJECT_URL = os.environ.get("CI_PROJECT_URL", "https://gitlab.in.axept.com/rshb/data-proccessing-worker")
