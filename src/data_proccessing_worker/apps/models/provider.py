@@ -1,9 +1,5 @@
-from typing import List
-from datetime import datetime
-from sqlalchemy import and_
-
 from data_proccessing_worker.apps.models.base import SyncPostgresDriver
-from data_proccessing_worker.apps.models.models import Feed, Indicator
+from data_proccessing_worker.apps.models.models import Feed, Indicator, Job, IndicatorActivity
 
 
 class BaseProvider:
@@ -23,4 +19,20 @@ class IndicatorProvider(BaseProvider):
 
     def update(self, feed: Feed):
         self.session.add(self.session.merge(feed))
+        self.session.commit()
+
+
+class JobProvider(BaseProvider):
+    def add(self, job: Job):
+        self.session.add(job)
+        self.session.commit()
+
+    def update(self, job: Job):
+        self.session.add(job)
+        self.session.commit()
+
+
+class IndicatorActivityProvider(BaseProvider):
+    def add(self, indicator_activity: IndicatorActivity):
+        self.session.add(indicator_activity)
         self.session.commit()

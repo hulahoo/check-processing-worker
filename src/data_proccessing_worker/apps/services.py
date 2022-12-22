@@ -1,12 +1,14 @@
 from datetime import datetime
 from math import ceil
 
-from data_proccessing_worker.apps.models.provider import IndicatorProvider
+from data_proccessing_worker.apps.models.models import IndicatorActivity
+from data_proccessing_worker.apps.models.provider import IndicatorProvider, IndicatorActivityProvider
 
 
 class IndicatorService:
     def __init__(self):
         self.indicator_provider = IndicatorProvider()
+        self.indicator_activity_provider =  IndicatorActivityProvider()
 
     def _get_RV(self, tcurrent: datetime, tlastseen: datetime, T, A=1) -> float:
         """
@@ -40,6 +42,7 @@ class IndicatorService:
 
             score = ceil(feed_weight * tag_weight * RV * 100)
 
+            old_weight = indicator.ioc_weight
             indicator.ioc_weight = score
 
             if indicator.ioc_weight == 0:
@@ -47,5 +50,14 @@ class IndicatorService:
 
             indicator.updated_at = now
             self.indicator_provider.update(indicator)
+
+            self.indicator_activity_provider.add(IndicatorActivity(
+                type='update-weight',
+                details={
+                    'change-from': str(old_weight),
+                    'change-to': str(score),
+                },
+                indicator_id=indicator.id
+            ))
 
         return indicators

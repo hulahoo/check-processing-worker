@@ -1,9 +1,14 @@
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from datetime import datetime
 
 from data_proccessing_worker.config.log_conf import logger
 from data_proccessing_worker.apps.services import IndicatorService
+from data_proccessing_worker.apps.models.models import Job
+from data_proccessing_worker.apps.models.provider import JobProvider
+from data_proccessing_worker.apps.constants import SERVICE_NAME
+from data_proccessing_worker.apps.enums import JobStatus
 
 
 app = Flask(__name__)
@@ -76,7 +81,22 @@ def api_routes():
 @app.route('/api/force-update', methods=["GET"])
 def force_update():
     indicator_service = IndicatorService()
+    job_provider = JobProvider()
+
+    job = Job(
+        service_name=SERVICE_NAME,
+        title='update-weight',
+        started_at=datetime.now(),
+        status=JobStatus.IN_PROGRESS
+    )
+
+    job_provider.add(job)
+
     indicator_service.update_weights()
+
+    job.finished_at = datetime.now()
+    job.status = JobStatus.SUCCESS
+    job_provider.update(job)
 
     return app.response_class(
         response={"status": "OK"},
