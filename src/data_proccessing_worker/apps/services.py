@@ -12,7 +12,14 @@ class IndicatorService:
         self.indicator_provider = IndicatorProvider()
         self.indicator_activity_provider = IndicatorActivityProvider()
 
-    def _get_rv(self, tcurrent: datetime, tlastseen: datetime, T, A=1) -> float:
+    def _get_rv(
+        self,
+        *,
+        tcurrent: datetime,
+        tlastseen: datetime,
+        t: int,
+        a: int = 1
+    ) -> float:
         """
         RV = 1 - ((tcurrent - tlastseen) / T) ** 1/A
         зависимость веса индикатора от времени
@@ -22,6 +29,8 @@ class IndicatorService:
         :param T - время жизни индикатора
         :param А - показатель угасания актуальности
         """
+        T = t
+        A = a
         return max(1 - ((tcurrent - tlastseen).days / T) ** (1/A), 0)
 
     def update_weights(self):
@@ -39,7 +48,11 @@ class IndicatorService:
                 f"Start calculating indicator - id:{indicator.id} weight:{indicator.weight} type:{indicator.ioc_type}"
             )
             if indicator.ioc_type in ['url', 'domain', 'ip', 'filename']:
-                RV = self._get_rv(now, indicator.created_at, 14)
+                RV = self._get_rv(
+                    t=14,
+                    tcurrent=now,
+                    tlastseen=indicator.created_at,
+                )
             else:
                 RV = 1
             logger.info(f"RV is: {RV}")

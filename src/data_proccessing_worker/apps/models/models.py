@@ -1,13 +1,14 @@
-from sqlalchemy import Column, String, and_, null
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import JSONB, BYTEA, UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy import (
     Column, Integer, String, DateTime, Text, Boolean, UniqueConstraint,
-    BigInteger, ForeignKey, DECIMAL, text
+    BigInteger, ForeignKey, DECIMAL, text, and_, null
 )
 
 
 from data_proccessing_worker.apps.models.abstract import IDBase, TimestampBase
+
+indicators_rel = "indicators.id"
 
 
 class IndicatorsContextSources(IDBase, TimestampBase):
@@ -47,7 +48,7 @@ class Feed(IDBase, TimestampBase):
 
 class IndicatorFeedRelationship(IDBase, TimestampBase):
     __tablename__ = "indicator_feed_relationships"
-    indicator_id = Column(UUID, ForeignKey('indicators.id', ondelete='SET NULL'), nullable=True)
+    indicator_id = Column(UUID, ForeignKey(indicators_rel, ondelete='SET NULL'), nullable=True)
     feed_id = Column(BigInteger, ForeignKey('feeds.id', ondelete='SET NULL'), nullable=True)
     deleted_at = Column(DateTime)
 
@@ -114,13 +115,13 @@ class IndicatorActivity(IDBase, TimestampBase):
     details = Column(JSONB)
     created_by = Column(BigInteger)
 
-    indicator_id = Column(UUID, ForeignKey('indicators.id'))
+    indicator_id = Column(UUID, ForeignKey(indicators_rel))
 
 
 class IndicatorTagRalationship(IDBase, TimestampBase):
     __tablename__ = "indicator_tag_relationships"
 
-    indicator_id = Column(UUID, ForeignKey('indicators.id'))
+    indicator_id = Column(UUID, ForeignKey(indicators_rel))
     tag_id = Column(BigInteger, ForeignKey('tags.id'))
 
 
