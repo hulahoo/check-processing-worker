@@ -6,7 +6,7 @@ from sqlalchemy import (
 )
 
 
-from data_proccessing_worker.apps.models.abstract import IDBase, TimestampBase
+from data_processing_worker.apps.models.abstract import IDBase, TimestampBase
 
 indicators_rel = "indicators.id"
 

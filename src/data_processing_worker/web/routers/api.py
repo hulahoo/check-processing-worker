@@ -3,12 +3,12 @@ from flask_wtf.csrf import CSRFProtect
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from datetime import datetime
 
-from data_proccessing_worker.config.log_conf import logger
-from data_proccessing_worker.apps.services import IndicatorService
-from data_proccessing_worker.apps.models.models import Job
-from data_proccessing_worker.apps.models.provider import JobProvider
-from data_proccessing_worker.apps.constants import SERVICE_NAME
-from data_proccessing_worker.apps.enums import JobStatus
+from data_processing_worker.config.log_conf import logger
+from data_processing_worker.apps.services import IndicatorService
+from data_processing_worker.apps.models.models import Job
+from data_processing_worker.apps.models.provider import JobProvider
+from data_processing_worker.apps.constants import SERVICE_NAME
+from data_processing_worker.apps.enums import JobStatus
 
 
 app = Flask(__name__)

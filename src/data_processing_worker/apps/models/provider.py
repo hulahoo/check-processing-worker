@@ -2,9 +2,9 @@ from typing import List
 
 from sqlalchemy.orm.attributes import flag_modified
 
-from data_proccessing_worker.config.log_conf import logger
-from data_proccessing_worker.apps.models.base import SyncPostgresDriver
-from data_proccessing_worker.apps.models.models import Indicator, Job, IndicatorActivity, ContextSource
+from data_processing_worker.config.log_conf import logger
+from data_processing_worker.apps.models.base import SyncPostgresDriver
+from data_processing_worker.apps.models.models import Indicator, Job, IndicatorActivity, ContextSource
 
 
 class BaseProvider:

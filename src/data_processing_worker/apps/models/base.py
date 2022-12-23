@@ -5,7 +5,7 @@ from sqlalchemy.engine.base import Engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from data_proccessing_worker.config.config import settings
+from data_processing_worker.config.config import settings
 
 
 class Database(ABC):

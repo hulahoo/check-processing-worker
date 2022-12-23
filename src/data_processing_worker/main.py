@@ -4,8 +4,8 @@ import threading
 import subprocess
 import os
 
-from data_proccessing_worker.web.routers.api import execute as flask_app
-from data_proccessing_worker.apps.models.migrations import apply_migrations
+from data_processing_worker.web.routers.api import execute as flask_app
+from data_processing_worker.apps.models.migrations import apply_migrations
 
 
 def start_worker():

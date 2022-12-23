@@ -1,11 +1,11 @@
 from datetime import datetime
 from dagster import job, repository, ScheduleDefinition, op
 
-from data_proccessing_worker.apps.services import IndicatorService
-from data_proccessing_worker.apps.models.provider import IndicatorProvider, JobProvider
-from data_proccessing_worker.apps.models.models import Job
-from data_proccessing_worker.apps.constants import SERVICE_NAME
-from data_proccessing_worker.apps.enums import JobStatus
+from data_processing_worker.apps.services import IndicatorService
+from data_processing_worker.apps.models.provider import IndicatorProvider, JobProvider
+from data_processing_worker.apps.models.models import Job
+from data_processing_worker.apps.constants import SERVICE_NAME
+from data_processing_worker.apps.enums import JobStatus
 
 
 indicator_provider = IndicatorProvider()

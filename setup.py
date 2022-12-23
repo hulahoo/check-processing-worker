@@ -32,7 +32,7 @@ setup(
     package_dir={"": "src"},
     entry_points={
         'console_scripts': [
-            CI_PROJECT_NAME + " = " + "data_proccessing_worker.main:execute",
+            CI_PROJECT_NAME + " = " + "data_processing_worker.main:execute",
         ]
     }
 )

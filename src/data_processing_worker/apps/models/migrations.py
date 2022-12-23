@@ -1,9 +1,9 @@
 from sqlalchemy import inspect
 from sqlalchemy.engine.base import Engine
 
-from data_proccessing_worker.config.log_conf import logger
-from data_proccessing_worker.apps.models.base import SyncPostgresDriver
-from data_proccessing_worker.apps.models.models import ContextSource, IndicatorContextSourceRelationship
+from data_processing_worker.config.log_conf import logger
+from data_processing_worker.apps.models.base import SyncPostgresDriver
+from data_processing_worker.apps.models.models import ContextSource, IndicatorContextSourceRelationship
 
 
 def apply_migrations() -> None:

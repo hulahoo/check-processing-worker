@@ -4,9 +4,9 @@ from datetime import datetime
 
 import requests
 
-from data_proccessing_worker.config.log_conf import logger
-from data_proccessing_worker.apps.models.models import IndicatorActivity, Indicator
-from data_proccessing_worker.apps.models.provider import (
+from data_processing_worker.config.log_conf import logger
+from data_processing_worker.apps.models.models import IndicatorActivity, Indicator
+from data_processing_worker.apps.models.provider import (
     IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider
 )
 
