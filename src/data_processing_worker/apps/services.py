@@ -57,10 +57,15 @@ class IndicatorService:
 
             request = requests.get(url=url, headers=headers)
 
-            if source.outbound_appendable_prefix:
-                indicator.context[source.outbound_appendable_prefix] = request.json()
+            if source.inbound_removable_prefix:
+                data = request.json()[source.inbound_removable_prefix]
             else:
-                indicator.context.update(request.json())
+                data = request.json()
+
+            if source.outbound_appendable_prefix:
+                indicator.context[source.outbound_appendable_prefix] = data
+            else:
+                indicator.context.update(data)
 
     def update_weights(self):
         now = datetime.now()
