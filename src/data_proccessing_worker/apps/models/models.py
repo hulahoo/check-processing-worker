@@ -11,13 +11,24 @@ from data_proccessing_worker.apps.models.abstract import IDBase, TimestampBase
 indicators_rel = "indicators.id"
 
 
-class IndicatorsContextSources(IDBase, TimestampBase):
-    __tablename__ = "indicators_context_sources"
+class ContextSource(IDBase, TimestampBase):
+    __tablename__ = "context_sources"
 
     ioc_type = Column(String(50))
     source_url = Column(String(255))
-    inbound_removable_prefix = Column(String(150))
-    outbound_appendable_prefix = Column(String(150))
+    request_method = Column(String(16))
+    request_headers = Column(Text)
+    request_body = Column(Text)
+    inbound_removable_prefix = Column(String(128))
+    outbound_appendable_prefix = Column(String(128))
+    created_by = Column(BigInteger)
+
+
+class IndicatorContextSourceRelationship(IDBase, TimestampBase):
+    __tablename__ = "indicator_context_source_relationships"
+
+    indicator_id = Column(UUID, ForeignKey(indicators_rel, ondelete='SET NULL'), nullable=True)
+    context_source_id = Column(BigInteger, ForeignKey('context_sources.id'))
 
 
 class Feed(IDBase, TimestampBase):

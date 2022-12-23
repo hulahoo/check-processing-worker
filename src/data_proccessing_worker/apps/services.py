@@ -2,15 +2,20 @@ from typing import List
 from math import ceil
 from datetime import datetime
 
+import requests
+
 from data_proccessing_worker.config.log_conf import logger
 from data_proccessing_worker.apps.models.models import IndicatorActivity, Indicator
-from data_proccessing_worker.apps.models.provider import IndicatorProvider, IndicatorActivityProvider
+from data_proccessing_worker.apps.models.provider import (
+    IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider
+)
 
 
 class IndicatorService:
     def __init__(self):
         self.indicator_provider = IndicatorProvider()
         self.indicator_activity_provider = IndicatorActivityProvider()
+        self.context_source_provider = ContextSourceProvider()
 
     def _get_rv(
         self,
@@ -33,6 +38,30 @@ class IndicatorService:
         A = a
         return max(1 - ((tcurrent - tlastseen).days / T) ** (1/A), 0)
 
+    def _parse_headers(self, headers_str: str):
+        headers = {}
+
+        for header in headers_str.split('\n'):
+            key, value = header.split(':')
+
+            headers[key.strip()] = value.strip()
+
+        return headers
+
+    def _update_context(self, indicator: Indicator):
+        sources = self.context_source_provider.get_by_type(indicator.ioc_type)
+
+        for source in sources:
+            headers = self._parse_headers(source.request_headers)
+            url = source.source_url.replace('{value}', indicator.value)
+
+            request = requests.get(url=url, headers=headers)
+
+            if source.outbound_appendable_prefix:
+                indicator.context[source.outbound_appendable_prefix] = request.json()
+            else:
+                indicator.context.update(request.json())
+
     def update_weights(self):
         now = datetime.now()
         logger.info(f"Start calculate indicator weight at: {now}")
@@ -44,6 +73,9 @@ class IndicatorService:
             if not indicator.feeds:
                 indicator.is_archived = True
                 continue
+
+            self._update_context(indicator)
+
             logger.info(
                 f"Start calculating indicator - id:{indicator.id} weight:{indicator.weight} type:{indicator.ioc_type}"
             )
