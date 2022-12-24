@@ -2,33 +2,33 @@ from datetime import datetime
 from dagster import job, repository, ScheduleDefinition, op
 
 from data_processing_worker.apps.services import IndicatorService
-from data_processing_worker.apps.models.provider import IndicatorProvider, JobProvider
-from data_processing_worker.apps.models.models import Job
+from data_processing_worker.apps.models.provider import IndicatorProvider, ProcessProvider
+from data_processing_worker.apps.models.models import Process
 from data_processing_worker.apps.constants import SERVICE_NAME
 from data_processing_worker.apps.enums import JobStatus
 
 
 indicator_provider = IndicatorProvider()
 indicator_service = IndicatorService()
-job_provider = JobProvider()
+process_provider = ProcessProvider()
 
 
 @op
 def update_indicators_op():
-    job_ = Job(
+    process_ = Process(
         service_name=SERVICE_NAME,
         title='update-weight',
         started_at=datetime.now(),
         status=JobStatus.IN_PROGRESS
     )
 
-    job_provider.add(job_)
+    process_provider.add(process_)
 
     indicator_service.update_weights()
 
-    job_.finished_at = datetime.now()
-    job_.status = JobStatus.SUCCESS
-    job_provider.update(job_)
+    process_.finished_at = datetime.now()
+    process_.status = JobStatus.SUCCESS
+    process_provider.update(process_)
 
 
 @job

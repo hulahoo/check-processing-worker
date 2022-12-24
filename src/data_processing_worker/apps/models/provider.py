@@ -4,7 +4,7 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.apps.models.base import SyncPostgresDriver
-from data_processing_worker.apps.models.models import Indicator, Job, IndicatorActivity, ContextSource
+from data_processing_worker.apps.models.models import Indicator, Process, IndicatorActivity, ContextSource
 
 
 class BaseProvider:
@@ -24,14 +24,14 @@ class IndicatorProvider(BaseProvider):
         self.session.commit()
 
 
-class JobProvider(BaseProvider):
-    def add(self, job: Job):
-        self.session.add(job)
+class ProcessProvider(BaseProvider):
+    def add(self, process: Process):
+        self.session.add(process)
         self.session.commit()
 
-    def update(self, job: Job):
-        logger.info(f"Updating job: {job}")
-        self.session.add(job)
+    def update(self, process: Process):
+        logger.info(f"Updating process: {process.id}")
+        self.session.add(process)
         self.session.commit()
 
 
