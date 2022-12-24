@@ -49,7 +49,7 @@ python setup.py install
 
 5. Запустите сервер
 ```
-data-proccessing-worker
+data-processing-worker
 ```
 появится веб интерфейс и по нему можно запустить задачи
 
