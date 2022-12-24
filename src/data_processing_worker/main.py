@@ -4,6 +4,7 @@ import threading
 import subprocess
 import os
 
+from data_proccessing_worker.config.log_conf import logger
 from data_processing_worker.web.routers.api import execute as flask_app
 
 
@@ -19,9 +20,11 @@ def execute():
     1. Worker to start scoring indicators
     2. Flask application to serve enpoints
     """
-
     flask_thread = threading.Thread(target=flask_app)
+    worker_thread = threading.Thread(target=start_worker)
+
+    logger.info("Start Flask app")
     flask_thread.start()
 
-    worker_thread = threading.Thread(target=start_worker)
+    logger.info("Start worker")
     worker_thread.start()

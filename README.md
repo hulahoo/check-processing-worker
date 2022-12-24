@@ -152,4 +152,9 @@ networks:
 docker-compose up --build
 ```
 
-## Накатка миграций происходит во время запуска консольной команды data-processing-worker.
+4. Применить дамп файла для бд в контейнере:
+```bash
+cat restore.sql | docker exec -i db psql -U dbuser -d db
+```
+
+5. Перзапустить контейнер worker
