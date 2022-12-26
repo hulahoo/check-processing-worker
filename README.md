@@ -14,11 +14,11 @@ src/events_gateway/config
 
 Имеющиеся env-параметры в проекте:
 ```bash
-APP_POSTGRESQL_NAME
-APP_POSTGRESQL_USER
-APP_POSTGRESQL_PASSWORD
-APP_POSTGRESQL_HOST
-APP_POSTGRESQL_PORT
+APP_POSTGRESQL_NAME=test_name
+APP_POSTGRESQL_USER=user
+APP_POSTGRESQL_PASSWORD=password
+APP_POSTGRESQL_HOST=localhost
+APP_POSTGRESQL_PORT=5432
 ```
 
 ### Запуск воркера
@@ -53,6 +53,20 @@ data-processing-worker
 ```
 появится веб интерфейс и по нему можно запустить задачи
 
+
+### Требования к инфраструктуре
+1. Минимальная версия Kafka:
+  ```yaml
+    wurstmeister/kafka:>=2.13-2.7.2
+  ```
+2. Минимальная версия Postgres:
+  ```yaml
+    postgres:>=14-alpine
+  ```
+3. Минимальная версия zookeper:
+  ```yaml
+    wurstmeister/zookeeper
+  ```
 
 ### Запуск с помощью Dockerfile
 
@@ -111,7 +125,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   postgres_db:
-    image: postgres:13.8-alpine
+    image: postgres:14-alpine
     container_name: db
     restart: unless-stopped
     expose:
