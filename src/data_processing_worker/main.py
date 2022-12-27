@@ -4,7 +4,7 @@ import threading
 import subprocess
 import os
 
-from data_proccessing_worker.config.log_conf import logger
+from data_processing_worker.config.log_conf import logger
 from data_processing_worker.web.routers.api import execute as flask_app
 
 

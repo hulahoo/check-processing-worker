@@ -1,7 +1,8 @@
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB, UUID, BYTEA
 from sqlalchemy import (
     Column, String, DateTime, Text, Boolean, UniqueConstraint,
-    BigInteger, DECIMAL, text
+    BigInteger, DECIMAL, text, ForeignKey, and_, null
 )
 
 from data_processing_worker.apps.models.abstract import IDBase, TimestampBase
@@ -25,8 +26,8 @@ class ContextSource(IDBase, TimestampBase):
 class IndicatorContextSourceRelationship(IDBase, TimestampBase):
     __tablename__ = "indicator_context_source_relationships"
 
-    indicator_id = Column(UUID(as_uuid=True))
-    context_source_id = Column(BigInteger)
+    indicator_id = Column(UUID, ForeignKey(indicators_rel), nullable=True)
+    context_source_id = Column(BigInteger, ForeignKey('context_sources.id'))
 
 
 class Feed(IDBase, TimestampBase):
@@ -59,8 +60,8 @@ class Feed(IDBase, TimestampBase):
 
 class IndicatorFeedRelationship(IDBase, TimestampBase):
     __tablename__ = "indicator_feed_relationships"
-    indicator_id = Column(UUID(as_uuid=True))
-    feed_id = Column(BigInteger)
+    indicator_id = Column(UUID, ForeignKey(indicators_rel), nullable=True)
+    feed_id = Column(BigInteger, ForeignKey('feeds.id'), nullable=True)
     deleted_at = Column(DateTime)
 
 
@@ -98,6 +99,24 @@ class Indicator(TimestampBase):
     created_by = Column(BigInteger)
     updated_at = Column(DateTime)
 
+    feeds = relationship(
+        Feed,
+        backref='indicators',
+        secondary='indicator_feed_relationships',
+        primaryjoin=(
+            and_(
+                IndicatorFeedRelationship.indicator_id == id,
+                IndicatorFeedRelationship.deleted_at == null()
+            )
+        )
+    )
+
+    tags = relationship(
+        Tag,
+        backref='indicators',
+        secondary='indicator_tag_relationships',
+    )
+
     UniqueConstraint(value, ioc_type, name='indicators_unique_value_type')
 
 
@@ -113,8 +132,8 @@ class IndicatorActivity(IDBase, TimestampBase):
 class IndicatorTagRalationship(IDBase, TimestampBase):
     __tablename__ = "indicator_tag_relationships"
 
-    indicator_id = Column(UUID(as_uuid=True))
-    tag_id = Column(BigInteger)
+    indicator_id = Column(UUID, ForeignKey(indicators_rel))
+    tag_id = Column(BigInteger, ForeignKey('tags.id'))
 
 
 class Process(IDBase):

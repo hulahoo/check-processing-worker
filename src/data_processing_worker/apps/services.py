@@ -114,7 +114,7 @@ class IndicatorService:
             self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
-                type='update-weight',
+                activity_type='update-weight',
                 details={
                     'change-from': str(old_weight),
                     'change-to': str(score),
