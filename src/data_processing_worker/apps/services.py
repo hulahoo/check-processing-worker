@@ -3,6 +3,7 @@ from math import ceil
 from datetime import datetime
 
 import requests
+from requests.exceptions import RequestException
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.apps.models.models import IndicatorActivity, Indicator
@@ -39,6 +40,9 @@ class IndicatorService:
         return max(1 - ((tcurrent - tlastseen).days / T) ** (1/A), 0)
 
     def _parse_headers(self, headers_str: str):
+        if not headers_str:
+            return None
+
         headers = {}
 
         for header in headers_str.split('\n'):
@@ -55,17 +59,25 @@ class IndicatorService:
             headers = self._parse_headers(source.request_headers)
             url = source.source_url.replace('{value}', indicator.value)
 
-            request = requests.get(url=url, headers=headers)
+            try:
+                request = requests.get(url=url, headers=headers)
 
-            if source.inbound_removable_prefix:
-                data = request.json()[source.inbound_removable_prefix]
-            else:
-                data = request.json()
+                if source.inbound_removable_prefix:
+                    data = request.json()[source.inbound_removable_prefix]
+                else:
+                    data = request.json()
 
-            if source.outbound_appendable_prefix:
-                indicator.context[source.outbound_appendable_prefix] = data
-            else:
+                if not indicator.context:
+                    indicator.context = {}
+
+                if source.outbound_appendable_prefix:
+                    data = {source.outbound_appendable_prefix: data}
+                else:
+                    data = {'context': data}
+
                 indicator.context.update(data)
+            except RequestException:
+                logger.warning(f"Unable to get response from {url}")
 
     def update_weights(self):
         now = datetime.now()
@@ -77,6 +89,7 @@ class IndicatorService:
         for indicator in indicators:
             if not indicator.feeds:
                 indicator.is_archived = True
+                self.indicator_provider.update(indicator)
                 continue
 
             self._update_context(indicator)
