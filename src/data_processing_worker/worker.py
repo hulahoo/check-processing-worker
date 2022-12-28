@@ -1,5 +1,5 @@
 from datetime import datetime
-from dagster import job, repository, ScheduleDefinition, op
+from dagster import job, repository, ScheduleDefinition, op, DefaultScheduleStatus
 
 from data_processing_worker.apps.services import IndicatorService
 from data_processing_worker.apps.models.provider import IndicatorProvider, ProcessProvider
@@ -41,7 +41,8 @@ def indicators_repository():
     jobs = [
         ScheduleDefinition(
             job=update_indicators_job,
-            cron_schedule='0 0 * * *'
+            cron_schedule='0 0 * * *',
+            default_status=DefaultScheduleStatus.RUNNING
         )
     ]
 
