@@ -124,16 +124,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  postgres_db:
-    image: postgres:14-alpine
-    container_name: db
-    restart: unless-stopped
-    expose:
-      - 5432 
-    environment:
-      POSTGRES_DB: db
-      POSTGRES_USER: dbuser
-      POSTGRES_PASSWORD: test
+  db:
+    image: rshb-cti-db-postgres:staging
 
   worker:
     restart: always
@@ -150,10 +142,10 @@ services:
       APP_POSTGRESQL_USER: dbuser
       APP_POSTGRESQL_PASSWORD: test
       APP_POSTGRESQL_NAME: db
-      APP_POSTGRESQL_HOST: postgres_db
+      APP_POSTGRESQL_HOST: db
       APP_POSTGRESQL_PORT: 5432
     depends_on:
-      - postgres_db
+      - db
 
  
 networks:
@@ -165,10 +157,3 @@ networks:
 ```bash
 docker-compose up --build
 ```
-
-4. Применить дамп файла для бд в контейнере:
-```bash
-cat restore.sql | docker exec -i db psql -U dbuser -d db
-```
-
-5. Перзапустить контейнер worker
