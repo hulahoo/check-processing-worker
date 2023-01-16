@@ -145,3 +145,11 @@ class Process(IDBase):
     status = Column(String(32))
     started_at = Column(DateTime)
     finished_at = Column(DateTime)
+
+
+class PlatformSetting(IDBase):
+    __tablename__ = "platform_settings"
+    key = Column(String(128))
+    value = Column(JSONB)
+    updated_at = Column(DateTime)
+    created_by = Column(BigInteger)

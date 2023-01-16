@@ -4,7 +4,9 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.apps.models.base import SyncPostgresDriver
-from data_processing_worker.apps.models.models import Indicator, Process, IndicatorActivity, ContextSource
+from data_processing_worker.apps.models.models import (
+    Indicator, Process, IndicatorActivity, ContextSource, PlatformSetting
+)
 
 
 class BaseProvider:
@@ -46,3 +48,10 @@ class ContextSourceProvider(BaseProvider):
         query = self.session.query(ContextSource).where(ContextSource.ioc_type == ioc_type)
 
         return query.all()
+
+
+class PlatformSettingProvider(BaseProvider):
+    def get_by_key(self, key: str) -> PlatformSetting:
+        query = self.session.query(PlatformSetting).where(PlatformSetting.key == key)
+
+        return query.first()

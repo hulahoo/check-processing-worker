@@ -5,10 +5,11 @@ from datetime import datetime
 import requests
 from requests.exceptions import RequestException
 
+from data_processing_worker.apps.constants import SERVICE_NAME
 from data_processing_worker.config.log_conf import logger
-from data_processing_worker.apps.models.models import IndicatorActivity, Indicator
+from data_processing_worker.apps.models.models import IndicatorActivity, Indicator, PlatformSetting
 from data_processing_worker.apps.models.provider import (
-    IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider
+    IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider, PlatformSettingProvider
 )
 
 
@@ -17,6 +18,7 @@ class IndicatorService:
         self.indicator_provider = IndicatorProvider()
         self.indicator_activity_provider = IndicatorActivityProvider()
         self.context_source_provider = ContextSourceProvider()
+        self.platform_setting_provider = PlatformSettingProvider()
 
     def _get_rv(
         self,
@@ -24,7 +26,7 @@ class IndicatorService:
         tcurrent: datetime,
         tlastseen: datetime,
         t: int,
-        a: int = 1
+        a: float = 1
     ) -> float:
         """
         RV = 1 - ((tcurrent - tlastseen) / T) ** 1/A
@@ -79,6 +81,19 @@ class IndicatorService:
             except RequestException:
                 logger.warning(f"Unable to get response from {url}")
 
+    def _get_settings(self, setting: PlatformSetting, type: str):
+        ttl = 14
+        weight_decreasing = 1
+
+        if setting and setting.value:
+            if setting.value['indicators-ttl'] and setting.value['indicators-ttl'][type]:
+                ttl = setting.value['indicators-ttl'][type]
+
+            if setting.value['indicators-weight-decreasing'] and setting.value['indicators-weight-decreasing'][type]:
+                weight_decreasing = setting.value['indicators-weight-decreasing'][type]
+
+        return ttl, weight_decreasing
+
     def update_weights(self):
         now = datetime.now()
         logger.info(f"Start calculate indicator weight at: {now}")
@@ -97,14 +112,21 @@ class IndicatorService:
             logger.info(
                 f"Start calculating indicator - id:{indicator.id} weight:{indicator.weight} type:{indicator.ioc_type}"
             )
+
             if indicator.ioc_type in ['url', 'domain', 'ip', 'filename']:
+                setting: PlatformSetting = self.platform_setting_provider.get_by_key(SERVICE_NAME)
+
+                ttl, weight_decreasing = self._get_settings(setting, indicator.ioc_type)
+
                 RV = self._get_rv(
-                    t=14,
+                    t=ttl,
+                    a=weight_decreasing,
                     tcurrent=now,
                     tlastseen=indicator.created_at,
                 )
             else:
                 RV = 1
+
             logger.info(f"RV is: {RV}")
 
             feed_weight = max(feed.weight for feed in indicator.feeds) / 100
