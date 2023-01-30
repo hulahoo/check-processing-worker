@@ -137,7 +137,7 @@ class IndicatorService:
             tag_weight = max(tag.weight for tag in indicator.tags) / 100 if indicator.tags else 1.0
             logger.info(f"Calculated tag weight: {tag_weight}")
 
-            score = ceil(feed_weight * tag_weight * Decimal(RV) * Decimal(100))
+            score = ceil(Decimal(feed_weight) * Decimal(tag_weight) * Decimal(RV) * Decimal(100))
             logger.info(f"Total calculated score: {score}")
 
             old_weight = indicator.weight
