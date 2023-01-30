@@ -48,5 +48,6 @@ class SyncPostgresDriver(Database):
             autocommit=False, autoflush=False, bind=self.engine
         ))
 
+
 metadata = MetaData(bind=SyncPostgresDriver().engine)
 Base = declarative_base(metadata=metadata)
