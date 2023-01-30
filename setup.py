@@ -11,8 +11,8 @@ install_requires = [
     ('prometheus-client', '0.15.0'),
     ('python-dotenv', '0.21.0'),
     ('environs', '9.5.0'),
-    ('dagster', '1.1.10'),
-    ('dagit', '1.1.10'),
+    ('dagster', '1.1.6'),
+    ('dagit', '1.1.6'),
 ]
 
 CI_PROJECT_NAME = os.environ.get("CI_PROJECT_NAME", "data-processing-worker")
