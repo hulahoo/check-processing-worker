@@ -4,6 +4,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy import desc
 
 from data_processing_worker.config.log_conf import logger
+from data_processing_worker.apps.utils import benchmark
 from data_processing_worker.apps.models.base import SyncPostgresDriver
 from data_processing_worker.apps.models.models import (
     Indicator, Process, IndicatorActivity, ContextSource, PlatformSetting
@@ -16,6 +17,7 @@ class BaseProvider:
 
 
 class IndicatorProvider(BaseProvider):
+    @benchmark
     def get_all(self):
         query = self.session.query(Indicator).order_by(desc(Indicator.created_at))
 
