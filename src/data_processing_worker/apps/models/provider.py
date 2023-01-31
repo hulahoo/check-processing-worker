@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy import desc
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.apps.models.base import SyncPostgresDriver
@@ -16,7 +17,7 @@ class BaseProvider:
 
 class IndicatorProvider(BaseProvider):
     def get_all(self):
-        query = self.session.query(Indicator)
+        query = self.session.query(Indicator).order_by(desc(Indicator.created_at))
 
         return query.all()
 
