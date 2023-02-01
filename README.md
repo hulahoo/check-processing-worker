@@ -19,6 +19,9 @@ APP_POSTGRESQL_USER=user
 APP_POSTGRESQL_PASSWORD=password
 APP_POSTGRESQL_HOST=localhost
 APP_POSTGRESQL_PORT=5432
+
+DAGSTER_HOME=~/dagster_home
+DAGIT_ENABLED=false
 ```
 
 ### Запуск воркера
@@ -47,11 +50,15 @@ pip3 install -r requirements.txt
 python setup.py install
 ```
 
-5. Запустите сервер
+5. Запустите сервис
 ```
 data-processing-worker
 ```
-появится веб интерфейс и по нему можно запустить задачи
+
+Для отладки можно запустить dagit (dagster web UI) установив env DAGIT_ENABLED=true.
+В этом случае dagit запуститься на 3000 порту.
+
+Для настроек dagster используется файл /config/dagster.yaml
 
 
 ### Требования к инфраструктуре
