@@ -1,4 +1,3 @@
-import pytz
 from typing import List
 from math import ceil
 from decimal import Decimal
@@ -41,6 +40,7 @@ class IndicatorService:
         """
         T = t
         A = a
+
         return max(1 - ((tcurrent - tlastseen).days / T) ** (1/A), 0)
 
     def _parse_headers(self, headers_str: str):
@@ -97,7 +97,7 @@ class IndicatorService:
         return ttl, weight_decreasing
 
     def update_weights(self):
-        now = datetime.now(tz=pytz.UTC)
+        now = datetime.now()
         logger.info(f"Start calculate indicator weight at: {now}")
 
         indicators: List[Indicator] = self.indicator_provider.get_all()
