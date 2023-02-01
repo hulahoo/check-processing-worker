@@ -5,7 +5,6 @@ from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 
 from data_processing_worker.config.log_conf import logger
-from data_processing_worker.apps.utils import benchmark
 from data_processing_worker.apps.models.base import SyncPostgresDriver
 from data_processing_worker.apps.models.models import (
     Indicator, Process, IndicatorActivity, ContextSource, PlatformSetting, Job
@@ -18,7 +17,6 @@ class BaseProvider:
 
 
 class IndicatorProvider(BaseProvider):
-    @benchmark
     def get_all(self):
         query = self.session.query(Indicator).order_by(desc(Indicator.created_at))
 

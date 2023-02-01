@@ -11,7 +11,7 @@ from data_processing_worker.apps.constants import SERVICE_NAME
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.apps.models.models import IndicatorActivity, Indicator, PlatformSetting
 from data_processing_worker.apps.models.provider import (
-    IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider, PlatformSettingProvider, benchmark
+    IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider, PlatformSettingProvider
 )
 
 
@@ -96,7 +96,6 @@ class IndicatorService:
 
         return ttl, weight_decreasing
 
-    @benchmark
     def update_weights(self):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start calculate indicator weight at: {now}")
