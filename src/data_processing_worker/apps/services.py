@@ -88,10 +88,10 @@ class IndicatorService:
         weight_decreasing = 1
 
         if setting and setting.value:
-            if setting.value['indicators-ttl'] and setting.value['indicators-ttl'][type]:
+            if setting.value['indicators-ttl'] and type in setting.value['indicators-ttl']:
                 ttl = setting.value['indicators-ttl'][type]
 
-            if setting.value['indicators-weight-decreasing'] and setting.value['indicators-weight-decreasing'][type]:
+            if setting.value['indicators-weight-decreasing'] and type in setting.value['indicators-weight-decreasing']:
                 weight_decreasing = setting.value['indicators-weight-decreasing'][type]
 
         return ttl, weight_decreasing
@@ -102,7 +102,6 @@ class IndicatorService:
         logger.info(f"Start calculate indicator weight at: {now}")
 
         indicators: List[Indicator] = self.indicator_provider.get_all()
-        logger.info(f"Retrieved indicators: {indicators}")
 
         for indicator in indicators:
             if not indicator.feeds:

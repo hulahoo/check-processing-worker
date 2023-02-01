@@ -153,3 +153,11 @@ class PlatformSetting(IDBase):
     value = Column(JSONB)
     updated_at = Column(DateTime)
     created_by = Column(BigInteger)
+
+
+class Job(IDBase):
+    __tablename__ = "_indicators_jobs"
+
+    worker = Column(String(32), unique=True)
+
+    status = Column(String(16))

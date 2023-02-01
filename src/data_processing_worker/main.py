@@ -3,14 +3,32 @@
 import threading
 import subprocess
 import os
+import shutil
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.web.routers.api import execute as flask_app
+from data_processing_worker.apps.models.base import metadata
+from data_processing_worker.config.config import settings
 
 
-def start_worker():
-    path = os.path.dirname(os.path.abspath(__file__))
+if not os.path.exists(settings.app.dagster_home):
+    os.makedirs(settings.app.dagster_home)
+
+shutil.copy(settings.app.config_path, settings.app.dagster_home)
+
+metadata.drop_all(tables=[metadata.tables['_indicators_jobs']])
+metadata.create_all(tables=[metadata.tables['_indicators_jobs']])
+
+os.environ['DAGSTER_HOME'] = settings.app.dagster_home
+path = os.path.dirname(os.path.abspath(__file__))
+
+
+def start_dagit():
     subprocess.run(['dagit', '-f', f'{path}/worker.py'], check=True)
+
+
+def start_dagster():
+    subprocess.run(['dagster-daemon', 'run', '-f', f'{path}/worker.py'], check=True)
 
 
 def execute():
@@ -21,10 +39,16 @@ def execute():
     2. Flask application to serve enpoints
     """
     flask_thread = threading.Thread(target=flask_app)
-    worker_thread = threading.Thread(target=start_worker)
+    dagit_thread = threading.Thread(target=start_dagit)
+    dagster_thread = threading.Thread(target=start_dagster)
 
     logger.info("Start Flask app")
     flask_thread.start()
 
-    logger.info("Start worker")
-    worker_thread.start()
+    logger.info("Start Dagster...")
+    dagster_thread.start()
+
+    if settings.app.dagit_enabled:
+        logger.info("Start Dagit...")
+        dagit_thread.start()
+

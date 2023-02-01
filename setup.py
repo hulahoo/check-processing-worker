@@ -16,7 +16,7 @@ install_requires = [
 ]
 
 CI_PROJECT_NAME = os.environ.get("CI_PROJECT_NAME", "data-processing-worker")
-ARTIFACT_VERSION = os.environ.get("ARTIFACT_VERSION", "local")
+ARTIFACT_VERSION = os.environ.get("ARTIFACT_VERSION", "0.1")
 CI_PROJECT_TITLE = os.environ.get("CI_PROJECT_TITLE", "Воркер актуализации скоринга")
 CI_PROJECT_URL = os.environ.get("CI_PROJECT_URL", "https://gitlab.in.axept.com/rshb/data-proccessing-worker")
 
@@ -34,5 +34,9 @@ setup(
         'console_scripts': [
             CI_PROJECT_NAME + " = " + "data_processing_worker.main:execute",
         ]
-    }
+    },
+    include_package_data=True,
+    package_data={
+        "data_processing_worker.config": ["dagster.yaml"],
+    },
 )

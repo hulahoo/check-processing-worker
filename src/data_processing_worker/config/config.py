@@ -1,3 +1,5 @@
+import os
+
 from dataclasses import dataclass
 from environs import Env
 
@@ -12,8 +14,16 @@ class DBConfig:
 
 
 @dataclass
+class APPConfig:
+    dagster_home: str
+    dagit_enabled: bool
+    config_path: str
+
+
+@dataclass
 class Config:
     db: DBConfig
+    app: APPConfig
 
 
 def load_config(path: str = None) -> Config:
@@ -27,6 +37,11 @@ def load_config(path: str = None) -> Config:
             password=env.str('APP_POSTGRESQL_PASSWORD'),
             host=env.str('APP_POSTGRESQL_HOST'),
             port=env.str('APP_POSTGRESQL_PORT')
+        ),
+        app=APPConfig(
+            dagster_home=os.path.expanduser(env.str('DAGSTER_HOME')),
+            dagit_enabled=env.bool('DAGIT_ENABLED'),
+            config_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dagster.yaml')
         )
     )
 
