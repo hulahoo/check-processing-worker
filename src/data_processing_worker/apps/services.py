@@ -97,9 +97,25 @@ class IndicatorService:
 
         return ttl, weight_decreasing
 
+    def _commit(self, batch_size):
+        logger.info(f'commit {batch_size} indicators')
+
+        try:
+            self.indicator_provider.session.commit()
+            self.indicator_activity_provider.session.commit()
+        except Exception as e:
+            logger.warning(f'commit failed: {e}. The batch is skipped for this run')
+
+            self.indicator_provider.session.rollback()
+            self.indicator_activity_provider.session.rollback()
+
     def update_weights(self):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start calculate indicator weight at: {now}")
+
+        batch_size = 100
+        total_indicators_count = 0
+        archived_indicators_count = 0
 
         for indicator in self.indicator_provider.get_all():
             if not indicator.feeds:
@@ -108,10 +124,6 @@ class IndicatorService:
                 continue
 
             self._update_context(indicator)
-
-            logger.info(
-                f"Start calculating indicator - id:{indicator.id} weight:{indicator.weight} type:{indicator.ioc_type}"
-            )
 
             if indicator.ioc_type in ['url', 'domain', 'ip', 'filename']:
                 setting: PlatformSetting = self.platform_setting_provider.get_by_key(SERVICE_NAME)
@@ -127,26 +139,19 @@ class IndicatorService:
             else:
                 RV = 1
 
-            logger.info(f"RV is: {RV}")
-
             feed_weight = max(feed.weight for feed in indicator.feeds) / 100
-            logger.info(f"Calculated feed weight: {feed_weight}")
-
             tag_weight = max(tag.weight for tag in indicator.tags) / 100 if indicator.tags else 1.0
-            logger.info(f"Calculated tag weight: {tag_weight}")
-
             score = ceil(Decimal(feed_weight) * Decimal(tag_weight) * Decimal(RV) * Decimal(100))
-            logger.info(f"Total calculated score: {score}")
 
             old_weight = indicator.weight
             indicator.weight = score
 
             if indicator.weight == 0:
-                logger.info("Indicator weight is 0. Set it to archive")
+                archived_indicators_count += 1
                 indicator.is_archived = True
 
             indicator.updated_at = now
-            self.indicator_provider.update(indicator)
+            self.indicator_provider.update(indicator, commit=False)
 
             self.indicator_activity_provider.add(IndicatorActivity(
                 activity_type='update-weight',
@@ -155,4 +160,12 @@ class IndicatorService:
                     'change-to': str(score),
                 },
                 indicator_id=indicator.id
-            ))
+            ), commit=False)
+
+            total_indicators_count += 1
+
+            if total_indicators_count % batch_size == 0:
+                logger.info(f'Total indicators: {total_indicators_count}, archived: {archived_indicators_count}')
+                self._commit(batch_size)
+
+        self._commit(total_indicators_count % batch_size)

@@ -24,10 +24,12 @@ class IndicatorProvider(BaseProvider):
         for row in query.yield_per(100):
             yield row
 
-    def update(self, indicator: Indicator):
+    def update(self, indicator: Indicator, commit: bool = False):
         flag_modified(indicator, 'context')
         self.session.add(self.session.merge(indicator))
-        self.session.commit()
+
+        if commit:
+            self.session.commit()
 
 
 class ProcessProvider(BaseProvider):
@@ -42,9 +44,11 @@ class ProcessProvider(BaseProvider):
 
 
 class IndicatorActivityProvider(BaseProvider):
-    def add(self, indicator_activity: IndicatorActivity):
+    def add(self, indicator_activity: IndicatorActivity, commit: bool = False):
         self.session.add(indicator_activity)
-        self.session.commit()
+
+        if commit:
+            self.session.commit()
 
 
 class ContextSourceProvider(BaseProvider):
