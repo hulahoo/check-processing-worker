@@ -1,3 +1,4 @@
+import pytz
 from typing import List
 from math import ceil
 from decimal import Decimal
@@ -97,7 +98,7 @@ class IndicatorService:
         return ttl, weight_decreasing
 
     def update_weights(self):
-        now = datetime.now()
+        now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start calculate indicator weight at: {now}")
 
         indicators: List[Indicator] = self.indicator_provider.get_all()
@@ -123,7 +124,7 @@ class IndicatorService:
                     t=ttl,
                     a=weight_decreasing,
                     tcurrent=now,
-                    tlastseen=indicator.created_at,
+                    tlastseen=indicator.created_at.replace(tzinfo=pytz.UTC),
                 )
             else:
                 RV = 1
