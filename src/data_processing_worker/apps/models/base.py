@@ -11,7 +11,12 @@ from data_processing_worker.config.config import settings
 class Database(ABC):
     def __init__(self) -> None:
         self.engine = self._create_engine()
-        self._session_factory = self._init_session_factory()
+
+        self.stream_engine = self._create_engine()
+        self.stream_engine.execution_options(stream_results=True)
+
+        self._session_factory = self._init_session_factory(engine=self.engine)
+        self._stream_session_factory = self._init_session_factory(engine=self.stream_engine)
 
     @abstractmethod
     def _get_db_url(self):
@@ -22,11 +27,16 @@ class Database(ABC):
         ...
 
     @abstractmethod
-    def _init_session_factory(self):
+    def _init_session_factory(self, engine):
         ...
 
-    def session(self):
-        return self._session_factory()
+    def session(self, stream=False):
+        if stream:
+            session = self._stream_session_factory()
+        else:
+            session = self._session_factory()
+
+        return session
 
 
 class SyncPostgresDriver(Database):
@@ -43,9 +53,9 @@ class SyncPostgresDriver(Database):
             pool_size=15,
         )
 
-    def _init_session_factory(self):
+    def _init_session_factory(self, engine):
         return scoped_session(sessionmaker(
-            autocommit=False, autoflush=False, bind=self.engine
+            autocommit=False, autoflush=False, bind=engine
         ))
 
 

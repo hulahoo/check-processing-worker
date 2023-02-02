@@ -14,13 +14,15 @@ from data_processing_worker.apps.models.models import (
 class BaseProvider:
     def __init__(self):
         self.session = SyncPostgresDriver().session()
+        self.stream_session = SyncPostgresDriver().session(stream=True)
 
 
 class IndicatorProvider(BaseProvider):
     def get_all(self):
-        query = self.session.query(Indicator).order_by(desc(Indicator.created_at))
+        query = self.stream_session.query(Indicator).order_by(desc(Indicator.created_at))
 
-        return query.all()
+        for row in query.yield_per(100):
+            yield row
 
     def update(self, indicator: Indicator):
         flag_modified(indicator, 'context')

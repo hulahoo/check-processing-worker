@@ -101,9 +101,7 @@ class IndicatorService:
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start calculate indicator weight at: {now}")
 
-        indicators: List[Indicator] = self.indicator_provider.get_all()
-
-        for indicator in indicators:
+        for indicator in self.indicator_provider.get_all():
             if not indicator.feeds:
                 indicator.is_archived = True
                 self.indicator_provider.update(indicator)
@@ -158,5 +156,3 @@ class IndicatorService:
                 },
                 indicator_id=indicator.id
             ))
-
-        return indicators
