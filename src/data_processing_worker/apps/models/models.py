@@ -141,6 +141,8 @@ class Process(IDBase):
     parent_id = Column(BigInteger, nullable=True)
     service_name = Column(String(64))
     title = Column(String(128))
+    name = Column(String(128))
+    request = Column(JSONB)
     result = Column(JSONB)
     status = Column(String(32))
     started_at = Column(DateTime)
@@ -154,10 +156,3 @@ class PlatformSetting(IDBase):
     updated_at = Column(DateTime)
     created_by = Column(BigInteger)
 
-
-class Job(IDBase):
-    __tablename__ = "_indicators_jobs"
-
-    worker = Column(String(32), unique=True)
-
-    status = Column(String(16))

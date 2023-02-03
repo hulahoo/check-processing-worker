@@ -7,8 +7,9 @@ import shutil
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.web.routers.api import execute as flask_app
-from data_processing_worker.apps.models.base import metadata
 from data_processing_worker.config.config import settings
+from data_processing_worker.apps.models.provider import ProcessProvider
+from data_processing_worker.apps.enums import JobStatus
 
 
 if not os.path.exists(settings.app.dagster_home):
@@ -16,8 +17,7 @@ if not os.path.exists(settings.app.dagster_home):
 
 shutil.copy(settings.app.config_path, settings.app.dagster_home)
 
-metadata.drop_all(tables=[metadata.tables['_indicators_jobs']])
-metadata.create_all(tables=[metadata.tables['_indicators_jobs']])
+ProcessProvider().delete(status=JobStatus.IN_PROGRESS)
 
 os.environ['DAGSTER_HOME'] = settings.app.dagster_home
 path = os.path.dirname(os.path.abspath(__file__))

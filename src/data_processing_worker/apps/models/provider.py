@@ -2,13 +2,14 @@ from typing import List
 
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy import desc
-from sqlalchemy.exc import IntegrityError
 
 from data_processing_worker.config.log_conf import logger
 from data_processing_worker.apps.models.base import SyncPostgresDriver
 from data_processing_worker.apps.models.models import (
-    Indicator, Process, IndicatorActivity, ContextSource, PlatformSetting, Job
+    Indicator, Process, IndicatorActivity, ContextSource, PlatformSetting
 )
+from data_processing_worker.apps.constants import SERVICE_NAME
+from data_processing_worker.apps.enums import JobStatus
 
 
 class BaseProvider:
@@ -34,13 +35,42 @@ class IndicatorProvider(BaseProvider):
 
 class ProcessProvider(BaseProvider):
     def add(self, process: Process):
+        current_process = self.session.query(Process).filter(
+            Process.service_name == SERVICE_NAME
+        ).filter(
+            Process.name == process.name
+        ).filter(
+            Process.status.in_([JobStatus.IN_PROGRESS, JobStatus.PENDING])
+        ).count()
+
+        if not current_process:
+            process.service_name = SERVICE_NAME
+
+            self.session.add(process)
+            self.session.commit()
+
+    def update(self, process: Process):
+        logger.info(f"Process to update: {process.id}")
         self.session.add(process)
         self.session.commit()
 
-    def update(self, process: Process):
-        logger.info(f"Updating process: {process.id}")
-        self.session.add(process)
+    def delete(self, status: str):
+        self.session.query(Process).filter(
+            Process.service_name == SERVICE_NAME
+        ).filter(
+            Process.status == status
+        ).delete()
+
         self.session.commit()
+
+    def get_all_by_statuses(self, statuses: List[str]):
+        query = self.session.query(Process).filter(
+            Process.service_name == SERVICE_NAME
+        ).filter(
+            Process.status.in_(statuses)
+        )
+
+        return query.all()
 
 
 class IndicatorActivityProvider(BaseProvider):
@@ -63,28 +93,3 @@ class PlatformSettingProvider(BaseProvider):
         query = self.session.query(PlatformSetting).where(PlatformSetting.key == key)
 
         return query.first()
-
-
-class JobProvider(BaseProvider):
-    def get_all(self, status: str = None):
-        query = self.session.query(Job)
-
-        if status:
-            query = query.filter(Job.status == status)
-
-        return query.all()
-
-    def add(self, job: Job):
-        self.session.add(job)
-
-        try:
-            self.session.commit()
-        except IntegrityError:
-            self.session.rollback()
-
-    def update(self, job: Job):
-        self.session.add(job)
-        self.session.commit()
-
-    def delete(self, status: str):
-        self.session.query(Job).filter(Job.status == status).delete()

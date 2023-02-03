@@ -4,11 +4,11 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from data_processing_worker.config.log_conf import logger
 
-from data_processing_worker.apps.models.models import Job
-from data_processing_worker.apps.models.provider import JobProvider
+from data_processing_worker.apps.models.models import Process
+from data_processing_worker.apps.models.provider import ProcessProvider
 
 from data_processing_worker.apps.services import IndicatorService
-from data_processing_worker.apps.enums import WorkerJobStatus
+from data_processing_worker.apps.enums import JobStatus
 
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ csrf.init_app(app)
 mimetype = 'application/json'
 
 indicator_service = IndicatorService()
-job_provider = JobProvider()
+process_provider = ProcessProvider()
 
 def execute():
     """
@@ -82,14 +82,14 @@ def api_routes():
 
 @app.route('/api/force-update', methods=["GET"])
 def force_update():
-    job_provider.add(Job(
-        worker='update indicators weights',
-        status=WorkerJobStatus.PENDING
+    process_provider.add(Process(
+        status=JobStatus.PENDING,
+        name=f'update indicators weight',
     ))
 
     result = []
-    for job in job_provider.get_all():
-        result.append(f'{job.status} - {job.worker}')
+    for process in process_provider.get_all_by_statuses([JobStatus.PENDING, JobStatus.IN_PROGRESS]):
+        result.append(f'{process.status}: {process.name}')
 
     return app.response_class(
         response='\n'.join(result),
