@@ -1,5 +1,4 @@
 import pytz
-from typing import List
 from math import ceil
 from decimal import Decimal
 from datetime import datetime
@@ -120,6 +119,7 @@ class IndicatorService:
         for indicator in self.indicator_provider.get_all():
             if not indicator.feeds:
                 indicator.is_archived = True
+                indicator.updated_at = now
                 self.indicator_provider.update(indicator)
                 continue
 

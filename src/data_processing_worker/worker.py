@@ -35,6 +35,7 @@ def update_indicators_op(context: OpExecutionContext):
     process.status = JobStatus.DONE
     process_provider.update(process)
 
+
 @job
 def update_indicators_job():
     update_indicators_op()
@@ -56,6 +57,7 @@ def check_jobs():
         )
 
         break
+
 
 @repository
 def indicators_repository():
