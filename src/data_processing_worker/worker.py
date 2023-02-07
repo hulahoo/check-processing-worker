@@ -2,10 +2,13 @@ from datetime import datetime
 from dagster import (
     job,
     op,
+    sensor,
     repository,
     ScheduleDefinition,
     DefaultScheduleStatus,
-    DagsterInstance
+    DefaultSensorStatus,
+    RunRequest,
+    OpExecutionContext
 )
 
 from data_processing_worker.apps.services import IndicatorService
@@ -18,16 +21,26 @@ indicator_service = IndicatorService()
 process_provider = ProcessProvider()
 
 
-@op
-def update_indicators_op():
+@op(config_schema={'process_id': int})
+def update_indicators_op(context: OpExecutionContext):
+    process = process_provider.get_by_id(context.op_config['process_id'])
+
+    process.started_at = datetime.now()
+    process.status = JobStatus.IN_PROGRESS
+    process_provider.update(process)
+
     indicator_service.update_weights()
+
+    process.finished_at = datetime.now()
+    process.status = JobStatus.DONE
+    process_provider.update(process)
 
 @job
 def update_indicators_job():
     update_indicators_op()
 
 
-@job(name='check_jobs')
+@sensor(job=update_indicators_job, default_status=DefaultSensorStatus.RUNNING, minimum_interval_seconds=60)
 def check_jobs():
     if process_provider.get_all_by_statuses([JobStatus.IN_PROGRESS]):
         return
@@ -35,18 +48,14 @@ def check_jobs():
     pending_processes = process_provider.get_all_by_statuses([JobStatus.PENDING])
 
     for process in pending_processes:
-        process.started_at = datetime.now()
-        process.status = JobStatus.IN_PROGRESS
-        process_provider.update(process)
-
-        update_indicators_job.execute_in_process(instance=DagsterInstance.get())
-
-        process.finished_at = datetime.now()
-        process.status = JobStatus.DONE
-        process_provider.update(process)
+        yield RunRequest(
+            run_key=f'Update weight {datetime.now()}',
+            run_config={
+                'ops': {'update_indicators_op': {'config': {'process_id': process.id}}}
+            },
+        )
 
         break
-
 
 @repository
 def indicators_repository():
@@ -58,12 +67,6 @@ def indicators_repository():
         )
     ]
 
-    jobs.append(
-        ScheduleDefinition(
-            job=check_jobs,
-            cron_schedule='* * * * *',
-            default_status=DefaultScheduleStatus.RUNNING
-        )
-    )
+    jobs.append(check_jobs)
 
     return jobs

@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
@@ -87,12 +89,25 @@ def force_update():
         name=f'update indicators weight',
     ))
 
+    return app.response_class(
+        response={"status": "Started"},
+        status=200,
+        content_type=mimetype
+    )
+
+
+@app.route('/api/force-update/statistics', methods=["GET"])
+def force_update_statistics():
     result = []
+
     for process in process_provider.get_all_by_statuses([JobStatus.PENDING, JobStatus.IN_PROGRESS]):
-        result.append(f'{process.status}: {process.name}')
+        result.append({
+            "process_status": process.status,
+            "process_name": process.name,
+        })
 
     return app.response_class(
-        response='\n'.join(result),
+        response=json.dumps(result),
         status=200,
-        content_type=CONTENT_TYPE_LATEST
+        content_type=mimetype
     )

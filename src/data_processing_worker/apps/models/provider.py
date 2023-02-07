@@ -34,6 +34,11 @@ class IndicatorProvider(BaseProvider):
 
 
 class ProcessProvider(BaseProvider):
+    def get_by_id(self, id_: int):
+        query = self.session.query(Process).filter(Process.id == id_)
+
+        return query.one()
+
     def add(self, process: Process):
         current_process = self.session.query(Process).filter(
             Process.service_name == SERVICE_NAME
