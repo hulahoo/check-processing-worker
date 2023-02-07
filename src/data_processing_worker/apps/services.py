@@ -40,7 +40,8 @@ class IndicatorService:
         """
         T = t
         A = a
-
+        logger.info(f"tcurrent: {tcurrent}, tlastseen: {tlastseen}, T: {T}, A: {A}")
+        logger.info(f"weight = (1 - {tcurrent.day} - {tlastseen.day} / {T} ** (1/{A}))")
         return max(1 - ((tcurrent - tlastseen).days / T) ** (1/A), 0)
 
     def _parse_headers(self, headers_str: str):
