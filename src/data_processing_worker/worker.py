@@ -7,8 +7,7 @@ from dagster import (
     ScheduleDefinition,
     DefaultScheduleStatus,
     DefaultSensorStatus,
-    RunRequest,
-    OpExecutionContext
+    RunRequest
 )
 
 from data_processing_worker.apps.services import IndicatorService
@@ -22,7 +21,7 @@ process_provider = ProcessProvider()
 
 
 @op(config_schema={'process_id': int})
-def update_indicators_op(context: OpExecutionContext):
+def update_indicators_op(context):
     process = process_provider.get_by_id(context.op_config['process_id'])
 
     process.started_at = datetime.now()
