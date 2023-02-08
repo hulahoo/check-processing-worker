@@ -30,6 +30,8 @@ def update_indicators_op(context: OpExecutionContext):
     process_provider.update(process)
 
     indicator_service.update_weights()
+    indicator_service.archive()
+    indicator_service.update_context()
 
     process.finished_at = datetime.now()
     process.status = JobStatus.DONE

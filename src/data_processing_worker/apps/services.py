@@ -21,6 +21,8 @@ class IndicatorService:
         self.context_source_provider = ContextSourceProvider()
         self.platform_setting_provider = PlatformSettingProvider()
 
+        self.batch_size = 100
+
     def _get_rv(
         self,
         *,
@@ -58,6 +60,9 @@ class IndicatorService:
         return headers
 
     def _update_context(self, indicator: Indicator):
+        if indicator.is_archived:
+            return
+
         sources = self.context_source_provider.get_by_type(indicator.ioc_type)
 
         for source in sources:
@@ -109,64 +114,115 @@ class IndicatorService:
             self.indicator_provider.session.rollback()
             self.indicator_activity_provider.session.rollback()
 
+    def _update_weight(self, indicator: Indicator, now: datetime):
+        if indicator.ioc_type in ['url', 'domain', 'ip', 'filename']:
+            setting: PlatformSetting = self.platform_setting_provider.get_by_key(SERVICE_NAME)
+
+            ttl, weight_decreasing = self._get_settings(setting, indicator.ioc_type)
+
+            RV = self._get_rv(
+                t=ttl,
+                a=weight_decreasing,
+                tcurrent=now,
+                tlastseen=indicator.created_at.replace(tzinfo=pytz.UTC),
+            )
+        else:
+            RV = 1
+
+        feed_weight = max(feed.weight for feed in indicator.feeds) / 100
+        tag_weight = max(tag.weight for tag in indicator.tags) / 100 if indicator.tags else 1.0
+        score = ceil(Decimal(feed_weight) * Decimal(tag_weight) * Decimal(RV) * Decimal(100))
+
+        indicator.weight = score
+
+
+    def _archive(self, indicator: Indicator):
+        if not indicator.feeds or indicator.weight == 0:
+            indicator.is_archived = True
+
+
+    def update_context(self):
+        now = datetime.now(tz=pytz.UTC)
+        logger.info(f"Start update indicator context at: {now}")
+
+        total_indicators_count = 0
+
+        for indicator in self.indicator_provider.get_all():
+            self._update_context(indicator)
+
+            indicator.updated_at = now
+
+            self.indicator_provider.update(indicator, commit=False)
+
+            self.indicator_activity_provider.add(IndicatorActivity(
+                activity_type='update-context',
+                indicator_id=indicator.id
+            ), commit=False)
+
+            total_indicators_count += 1
+
+            if total_indicators_count % self.batch_size == 0:
+                logger.info(f'Total indicators: {total_indicators_count}')
+                self._commit(self.batch_size)
+
+        self._commit(total_indicators_count % self.batch_size)
+
+
+    def archive(self):
+        now = datetime.now(tz=pytz.UTC)
+        logger.info(f"Start archiving indicator at: {now}")
+
+        total_indicators_count = 0
+
+        for indicator in self.indicator_provider.get_all():
+            self._archive(indicator)
+
+            indicator.updated_at = now
+
+            self.indicator_provider.update(indicator, commit=False)
+
+            self.indicator_activity_provider.add(IndicatorActivity(
+                activity_type='archive',
+                indicator_id=indicator.id
+            ), commit=False)
+
+            total_indicators_count += 1
+
+            if total_indicators_count % self.batch_size == 0:
+                logger.info(f'Total indicators: {total_indicators_count}')
+                self._commit(self.batch_size)
+
+        self._commit(total_indicators_count % self.batch_size)
+
+
     def update_weights(self):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start calculate indicator weight at: {now}")
 
-        batch_size = 100
         total_indicators_count = 0
-        archived_indicators_count = 0
 
         for indicator in self.indicator_provider.get_all():
-            if not indicator.feeds:
-                indicator.is_archived = True
-                indicator.updated_at = now
-                self.indicator_provider.update(indicator)
-                continue
-
-            self._update_context(indicator)
-
-            if indicator.ioc_type in ['url', 'domain', 'ip', 'filename']:
-                setting: PlatformSetting = self.platform_setting_provider.get_by_key(SERVICE_NAME)
-
-                ttl, weight_decreasing = self._get_settings(setting, indicator.ioc_type)
-
-                RV = self._get_rv(
-                    t=ttl,
-                    a=weight_decreasing,
-                    tcurrent=now,
-                    tlastseen=indicator.created_at.replace(tzinfo=pytz.UTC),
-                )
-            else:
-                RV = 1
-
-            feed_weight = max(feed.weight for feed in indicator.feeds) / 100
-            tag_weight = max(tag.weight for tag in indicator.tags) / 100 if indicator.tags else 1.0
-            score = ceil(Decimal(feed_weight) * Decimal(tag_weight) * Decimal(RV) * Decimal(100))
-
             old_weight = indicator.weight
-            indicator.weight = score
 
-            if indicator.weight == 0:
-                archived_indicators_count += 1
-                indicator.is_archived = True
+            self._update_weight(indicator, now)
 
             indicator.updated_at = now
+
             self.indicator_provider.update(indicator, commit=False)
 
             self.indicator_activity_provider.add(IndicatorActivity(
                 activity_type='update-weight',
                 details={
                     'change-from': str(old_weight),
-                    'change-to': str(score),
+                    'change-to': str(indicator.weight),
                 },
                 indicator_id=indicator.id
             ), commit=False)
 
             total_indicators_count += 1
 
-            if total_indicators_count % batch_size == 0:
-                logger.info(f'Total indicators: {total_indicators_count}, archived: {archived_indicators_count}')
-                self._commit(batch_size)
+            if total_indicators_count % self.batch_size == 0:
+                logger.info(f'Total indicators: {total_indicators_count}')
+                self._commit(self.batch_size)
 
-        self._commit(total_indicators_count % batch_size)
+        self._commit(total_indicators_count % self.batch_size)
