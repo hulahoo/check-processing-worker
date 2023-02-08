@@ -1,9 +1,10 @@
 from abc import abstractmethod, ABC
+from contextlib import contextmanager
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session, Session
 
 from data_processing_worker.config.config import settings
 
@@ -32,11 +33,21 @@ class Database(ABC):
 
     def session(self, stream=False):
         if stream:
-            session = self._stream_session_factory()
+            session: Session = self._stream_session_factory()
         else:
-            session = self._session_factory()
+            session: Session = self._session_factory()
 
-        return session
+        @contextmanager
+        def fn():
+            try:
+                yield session
+            except Exception as e:
+                session.rollback()
+                raise e
+            finally:
+                session.close()
+
+        return fn
 
 
 class SyncPostgresDriver(Database):

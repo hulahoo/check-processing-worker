@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from sqlalchemy import event
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB, UUID, BYTEA
 from sqlalchemy import (
@@ -156,3 +159,7 @@ class PlatformSetting(IDBase):
     updated_at = Column(DateTime)
     created_by = Column(BigInteger)
 
+
+@event.listens_for(Indicator, 'before_update')
+def receive_before_update(mapper, connection, target: Indicator):
+    target.updated_at = datetime.now()

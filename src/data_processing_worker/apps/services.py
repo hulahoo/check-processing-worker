@@ -44,7 +44,7 @@ class IndicatorService:
         A = a
         logger.info(f"tcurrent: {tcurrent}, tlastseen: {tlastseen}, T: {T}, A: {A}")
         logger.info(f"weight = (1 - {tcurrent.day} - {tlastseen.day} / {T} ** (1/{A}))")
-        return max(1 - ((tcurrent - tlastseen).days / T) ** (1/A), 0)
+        return max(1 - (max((tcurrent - tlastseen).days, 0) / T) ** (1/A), 0)
 
     def _parse_headers(self, headers_str: str):
         if not headers_str:
@@ -106,13 +106,10 @@ class IndicatorService:
         logger.info(f'commit {batch_size} indicators')
 
         try:
-            self.indicator_provider.session.commit()
-            self.indicator_activity_provider.session.commit()
+            self.indicator_provider.commit()
+            self.indicator_activity_provider.commit()
         except Exception as e:
             logger.warning(f'commit failed: {e}. The batch is skipped for this run')
-
-            self.indicator_provider.session.rollback()
-            self.indicator_activity_provider.session.rollback()
 
     def _update_weight(self, indicator: Indicator, now: datetime):
         if indicator.ioc_type in ['url', 'domain', 'ip', 'filename']:
@@ -148,14 +145,12 @@ class IndicatorService:
         for indicator in self.indicator_provider.get_all():
             self._update_context(indicator)
 
-            indicator.updated_at = now
-
-            self.indicator_provider.update(indicator, commit=False)
+            self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
                 activity_type='update-context',
                 indicator_id=indicator.id
-            ), commit=False)
+            ))
 
             total_indicators_count += 1
 
@@ -174,14 +169,12 @@ class IndicatorService:
         for indicator in self.indicator_provider.get_all():
             self._archive(indicator)
 
-            indicator.updated_at = now
-
-            self.indicator_provider.update(indicator, commit=False)
+            self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
                 activity_type='archive',
                 indicator_id=indicator.id
-            ), commit=False)
+            ))
 
             total_indicators_count += 1
 
@@ -204,9 +197,7 @@ class IndicatorService:
 
             self._update_weight(indicator, now)
 
-            indicator.updated_at = now
-
-            self.indicator_provider.update(indicator, commit=False)
+            self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
                 activity_type='update-weight',
@@ -215,7 +206,7 @@ class IndicatorService:
                     'change-to': str(indicator.weight),
                 },
                 indicator_id=indicator.id
-            ), commit=False)
+            ))
 
             total_indicators_count += 1
 
