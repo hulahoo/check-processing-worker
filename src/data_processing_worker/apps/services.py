@@ -135,11 +135,9 @@ class IndicatorService:
 
         indicator.weight = score
 
-
     def _archive(self, indicator: Indicator):
         if not indicator.feeds or indicator.weight == 0:
             indicator.is_archived = True
-
 
     def update_context(self):
         now = datetime.now(tz=pytz.UTC)
@@ -167,7 +165,6 @@ class IndicatorService:
 
         self._commit(total_indicators_count % self.batch_size)
 
-
     def archive(self):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start archiving indicator at: {now}")
@@ -193,7 +190,6 @@ class IndicatorService:
                 self._commit(self.batch_size)
 
         self._commit(total_indicators_count % self.batch_size)
-
 
     def update_weights(self):
         now = datetime.now(tz=pytz.UTC)
