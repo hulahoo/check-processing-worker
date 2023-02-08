@@ -20,7 +20,9 @@ class BaseProvider:
 
 class IndicatorProvider(BaseProvider):
     def get_all(self):
-        query = self.stream_session.query(Indicator).order_by(desc(Indicator.created_at))
+        query = self.stream_session.query(Indicator).filter(
+            Indicator.is_archived == False
+        ).order_by(desc(Indicator.created_at))
 
         for row in query.yield_per(100):
             yield row
