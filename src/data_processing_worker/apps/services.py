@@ -202,6 +202,8 @@ class IndicatorService:
         total_indicators_count = 0
 
         for indicator in self.indicator_provider.get_all():
+            logger.info(f"Process indicator {indicator.id}")
+
             old_weight = indicator.weight
 
             self._update_weight(indicator, now)
