@@ -20,8 +20,8 @@ process_provider = ProcessProvider()
 
 @op
 def update_indicators_op():
-    indicator_service.update_weights()
     indicator_service.archive()
+    indicator_service.update_weights()
     indicator_service.update_context()
 
 @job
