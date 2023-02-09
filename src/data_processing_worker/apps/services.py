@@ -86,9 +86,12 @@ class IndicatorService:
                 else:
                     prefix = 'context'
 
-                parsed_context = parse_context(prefix, data)
-
-                indicator.context.update(parsed_context)
+                try:
+                    parsed_context = parse_context(prefix, data)
+                except Exception as e:
+                    logger.warning(f'Unable to parse indicator context. indicator - {indicator.id}, data - {data} \n {e}')
+                else:
+                    indicator.context.update(parsed_context)
             except RequestException:
                 logger.warning(f"Unable to get response from {url}")
 
