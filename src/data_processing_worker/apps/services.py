@@ -12,6 +12,7 @@ from data_processing_worker.apps.models.models import IndicatorActivity, Indicat
 from data_processing_worker.apps.models.provider import (
     IndicatorProvider, IndicatorActivityProvider, ContextSourceProvider, PlatformSettingProvider
 )
+from data_processing_worker.apps.utils.context_parser import parse_context
 
 
 class IndicatorService:
@@ -81,11 +82,13 @@ class IndicatorService:
                     indicator.context = {}
 
                 if source.outbound_appendable_prefix:
-                    data = {source.outbound_appendable_prefix: data}
+                    prefix = source.outbound_appendable_prefix
                 else:
-                    data = {'context': data}
+                    prefix = 'context'
 
-                indicator.context.update(data)
+                parsed_context = parse_context(prefix, data)
+
+                indicator.context.update(parsed_context)
             except RequestException:
                 logger.warning(f"Unable to get response from {url}")
 
