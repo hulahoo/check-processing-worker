@@ -154,7 +154,7 @@ class IndicatorService:
             self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
-                activity_type='update-context',
+                activity_type='Add context',
                 indicator_id=indicator.id
             ))
 
@@ -178,7 +178,7 @@ class IndicatorService:
             self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
-                activity_type='archive',
+                activity_type='Archive indicator',
                 indicator_id=indicator.id
             ))
 
@@ -206,7 +206,7 @@ class IndicatorService:
             self.indicator_provider.update(indicator)
 
             self.indicator_activity_provider.add(IndicatorActivity(
-                activity_type='update-weight',
+                activity_type='Update indicator weight',
                 details={
                     'change-from': str(old_weight),
                     'change-to': str(indicator.weight),
