@@ -7,7 +7,7 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from data_processing_worker.config.log_conf import logger
 
 from data_processing_worker.apps.models.models import Process
-from data_processing_worker.apps.models.provider import ProcessProvider
+from data_processing_worker.apps.models.provider import ProcessProvider, IndicatorProvider
 
 from data_processing_worker.apps.services import IndicatorService
 from data_processing_worker.apps.enums import JobStatus
@@ -21,6 +21,8 @@ mimetype = 'application/json'
 
 indicator_service = IndicatorService()
 process_provider = ProcessProvider()
+indicator_provider = IndicatorProvider()
+
 
 def execute():
     """
@@ -84,10 +86,18 @@ def api_routes():
 
 @app.route('/api/force-update', methods=["GET"])
 def force_update():
-    process_provider.add(Process(
-        status=JobStatus.PENDING,
-        name=f'update indicators weight',
-    ))
+    chunk_size = 1000
+    indicators_count = indicator_provider.get_count()
+
+    for i in range(0, indicators_count, chunk_size):
+        process_provider.add(Process(
+            status=JobStatus.PENDING,
+            name=f'update indicators weight',
+            request={
+                'limit': chunk_size,
+                'offset': i
+            }
+        ))
 
     return app.response_class(
         response={"status": "Started"},

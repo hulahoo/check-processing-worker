@@ -18,6 +18,7 @@ if not os.path.exists(settings.app.dagster_home):
 shutil.copy(settings.app.config_path, settings.app.dagster_home)
 
 ProcessProvider().delete(status=JobStatus.IN_PROGRESS)
+ProcessProvider().delete(status=JobStatus.PENDING)
 
 os.environ['DAGSTER_HOME'] = settings.app.dagster_home
 path = os.path.dirname(os.path.abspath(__file__))

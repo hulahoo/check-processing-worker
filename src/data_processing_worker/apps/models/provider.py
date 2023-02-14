@@ -31,11 +31,17 @@ class BaseProvider:
 
 
 class IndicatorProvider(BaseProvider):
-    def get_all(self):
+    def get_all(self, limit: int = None, offset: int = None):
         with self.stream_session() as session:
             query = session.query(Indicator).filter(
                 Indicator.is_archived == False
             ).order_by(desc(Indicator.created_at))
+
+            if limit is not None:
+                query = query.limit(limit)
+
+            if offset is not None:
+                query = query.offset(offset)
 
             for row in query.yield_per(100):
                 yield row
@@ -43,6 +49,14 @@ class IndicatorProvider(BaseProvider):
     def update(self, indicator: Indicator):
         flag_modified(indicator, 'context')
         self.data.append(indicator)
+
+    def get_count(self):
+        with self.stream_session() as session:
+            query = session.query(Indicator).filter(
+                Indicator.is_archived == False
+            )
+
+            return query.count()
 
 
 class ProcessProvider(BaseProvider):
@@ -54,25 +68,16 @@ class ProcessProvider(BaseProvider):
 
     def add(self, process: Process):
         with self.session() as session:
-            current_process = session.query(Process).filter(
-                Process.service_name == SERVICE_NAME
-            ).filter(
-                Process.name == process.name
-            ).filter(
-                Process.status.in_([JobStatus.IN_PROGRESS, JobStatus.PENDING])
-            ).count()
+            process.service_name = SERVICE_NAME
 
-            if not current_process:
-                process.service_name = SERVICE_NAME
-
-                session.add(process)
-                session.commit()
+            session.add(process)
+            session.commit()
 
     def update(self, process: Process):
         logger.info(f"Process to update: {process.id}")
 
         with self.session() as session:
-            session.add(process)
+            session.add(session.merge(process))
             session.commit()
 
     def delete(self, status: str):

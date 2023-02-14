@@ -142,13 +142,13 @@ class IndicatorService:
         if not indicator.feeds or indicator.weight == 0:
             indicator.is_archived = True
 
-    def update_context(self):
+    def update_context(self, limit: int, offset: int):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start update indicator context at: {now}")
 
         total_indicators_count = 0
 
-        for indicator in self.indicator_provider.get_all():
+        for indicator in self.indicator_provider.get_all(limit, offset):
             self._update_context(indicator)
 
             self.indicator_provider.update(indicator)
@@ -166,13 +166,13 @@ class IndicatorService:
 
         self._commit(total_indicators_count % self.batch_size)
 
-    def archive(self):
+    def archive(self, limit: int, offset: int):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start archiving indicator at: {now}")
 
         total_indicators_count = 0
 
-        for indicator in self.indicator_provider.get_all():
+        for indicator in self.indicator_provider.get_all(limit, offset):
             self._archive(indicator)
 
             self.indicator_provider.update(indicator)
@@ -190,13 +190,13 @@ class IndicatorService:
 
         self._commit(total_indicators_count % self.batch_size)
 
-    def update_weights(self):
+    def update_weights(self, limit: int, offset: int):
         now = datetime.now(tz=pytz.UTC)
         logger.info(f"Start calculate indicator weight at: {now}")
 
         total_indicators_count = 0
 
-        for indicator in self.indicator_provider.get_all():
+        for indicator in self.indicator_provider.get_all(limit, offset):
             logger.info(f"Process indicator {indicator.id}")
 
             old_weight = indicator.weight
