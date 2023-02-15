@@ -129,6 +129,7 @@ class IndicatorService:
                 tcurrent=now,
                 tlastseen=indicator.created_at.replace(tzinfo=pytz.UTC),
             )
+            logger.info(f"RV is: {RV}")
         else:
             RV = 1
 
@@ -137,6 +138,8 @@ class IndicatorService:
         score = ceil(Decimal(feed_weight) * Decimal(tag_weight) * Decimal(RV) * Decimal(100))
 
         indicator.weight = score
+        if score == 0:
+            indicator.is_archived = True
 
     def _archive(self, indicator: Indicator):
         if not indicator.feeds or indicator.weight == 0:
