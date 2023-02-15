@@ -1,7 +1,9 @@
 import sys
 import logging
 
-logger = logging.getLogger('processing_worker')
+from dagster import get_dagster_logger
+
+logger = get_dagster_logger()
 logger.setLevel(logging.DEBUG)
 
 console = logging.StreamHandler(sys.stdout)
