@@ -86,7 +86,10 @@ def api_routes():
 
 @app.route('/api/force-update', methods=["GET"])
 def force_update():
-    chunk_size = 100
+    if process_provider.get_all_by_statuses([JobStatus.IN_PROGRESS, JobStatus.PENDING]):
+        return
+
+    chunk_size = 1000
     indicators_count = indicator_provider.get_count()
 
     for i in range(0, indicators_count, chunk_size):

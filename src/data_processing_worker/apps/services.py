@@ -22,7 +22,7 @@ class IndicatorService:
         self.context_source_provider = ContextSourceProvider()
         self.platform_setting_provider = PlatformSettingProvider()
 
-        self.batch_size = 10
+        self.batch_size = 100
 
     def _get_rv(
         self,
